@@ -1,0 +1,16 @@
+# Latex files
+*.aux
+*.bcf
+*.lof
+*.log
+*.lot
+*.toc
+*.out
+*.pdf
+*.blg
+*.bbl
+*.run.xml
+*.synctex.gz
+
+# macOS
+.DS_STORE

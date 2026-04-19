@@ -1,0 +1,141 @@
+% CHAPTER 2 — PRODUCT SPECIFICATIONS
+
+\chapter{Product Specifications}
+
+\section{Introduction}
+This chapter defines the full specification of the BodyQ project. It
+covers the project management approach adopted by the team, the complete
+product backlog, the sprint planning and execution, and the detailed
+functional and non-functional requirements of the system. It concludes
+with an analysis of the project's constraints, limitations, assumptions,
+standards, and ethical considerations.
+
+\section{Project Management}
+
+\subsection{Methodology}
+The BodyQ project was developed using an \textbf{Agile Scrum}
+methodology. Scrum was chosen because the project required the integration
+of several technically heterogeneous components---a mobile application,
+an AI engine, a backend, and an administration dashboard---whose
+interfaces and requirements were expected to evolve as implementation
+progressed. Scrum's iterative sprint structure allowed the team to
+deliver working increments at the end of each sprint, validate them
+against expected behavior, and adjust the plan for the following sprint
+based on what was learned.
+
+For the Team of 5 students, sprint planning, review, and retrospective meetings were conducted at the beginning and end of each sprint. A
+shared JIRA task board tracked user story status across To~Do,
+In~Progress, and Done columns throughout the Bocklog while tracking progress and contributions. Sprint duration was two weeks, with the
+exception of Sprint~0, which was one week long.
+
+\subsection{Timeline}
+The project was planned across five sprints over nine weeks, as detailed
+in Table~\ref{tab:sprints}.
+
+\begin{table}[H]
+	\centering
+	\caption{Sprints Planning}
+	\label{tab:sprints}
+	\begin{tabularx}{\textwidth}{lXcc}
+		\toprule
+		\textbf{Sprint} & \textbf{Primary Deliverables} & \textbf{From} & \textbf{To} \\
+		\midrule
+		Sprint~0 --- Foundation
+		& Repository setup, Supabase project
+		& Week~1\\[3pt]
+		Sprint~1 --- Auth \& Profile
+		& full DB schema, seed data, Authentication, 7-step onboarding, BMR/TDEE calculation, WebPage Initiation, Admin Dashboard implementation
+		& Week~2 & Week~3 \\[3pt]
+		Sprint~2 --- Core Tracking
+		& Workout module, exercise library, nutrition logging, barcode scanner, water tracker, home dashboard
+		& Week~3 & Week~4 \\[3pt]
+		Sprint~3 --- AI Engine
+		& Posture detection MVP, food recognition, RAG coaching engine
+		& Week~5 & Week~6 \\[3pt]
+		Sprint~4 --- Advanced Features
+		& Weekly reports, correlation engine, habit/streak system, push notifications
+		& Week~7 & Week~8 \\[3pt]
+		Sprint~5 --- Polish \& Ship
+		& Testing, bug fixes,UI animations, performance optimization, experimenting with  wearable device
+		& Week~9 & Week~9 \\
+		\bottomrule
+	\end{tabularx}
+\end{table}
+
+\section{Product Backlog}
+% Replace your entire table block with this:
+\begin{xltabular}{\textwidth}{Xcc}
+	\caption{Product Backlog} \label{tab:backlog} \\
+	\toprule
+	\textbf{User Story} & \textbf{Priority} & \textbf{Sprint} \\
+	\midrule
+	\endfirsthead
+	
+	% Header for Page 2+ (No "Continued" text)
+	\toprule
+	\textbf{User Story} & \textbf{Priority} & \textbf{Sprint} \\
+	\midrule
+	\endhead
+	
+	% Footer for all pages except the last (Empty)
+	\endfoot
+	
+	% Footer for the very last page
+	\bottomrule
+	\endlastfoot
+	
+	% YOUR DATA START
+	As a user, I want to create an account so that my data is saved securely. & High & S1 \\
+	As a user, I want an easy to use dashboard, so I can see my daily progress overview. & High & S1 \\
+	As a user, I receive personalized calorie and macro targets & High & S1 \\
+	As a user, I want to define my age, height, weight, goals, and experience level so the system can personalise recommendations. & High & S1 \\
+	As a user, I can browse and search the exercise library & High & S2 \\
+	As a user, I want to receive reminders for workouts, hydration, and sleep, so i can be on track & High & S2 \\
+	As a user, I can log my meals and track & High & S2 \\
+	As a user, I want to track my daily steps, so that I can monitor my activity level. & High & S2 \\
+	As a user, I want the app to record my workout duration and exercises performed, so that I can get a clear insight on my progress. & High & S3 \\
+	As a user, I want to view a list of supported exercises with instructions, so that I can choose what suits me better & High & S3 \\
+	As a user, I want to receive daily motivational quotes, so that I feel inspired to stay active. & High & S3 \\
+	As a user, I want to be able to customise my dashboard view, so that it fits my preferences. & High & S3 \\
+	As a user, I want to earn rewards for completing my fitness goals, so that I can stay motivated. & Medium & S2 \\
+	As a user, I want to receive AI-generated health advice based on my habits. & Medium & S3 \\
+	As a user, I want to log my daily water intake, so that I can get a clear insight on my progress. & Medium & S3 \\
+	As a user, I want to log my sleep duration, so that I can get a clear insight on my progress. & Medium & S4 \\
+	As a user, I want to log meals manually, so that I can track my calorie intake, so that I can get a clear insight on my progress. & Medium & S4 \\
+	As a user, I want to scan food using my camera to estimate calories. & Medium & S4 \\
+	As a user, I want to see calorie summaries and suggestions, so that I can fit my diet to my workout. & Medium & S4 \\
+	As a user, I want to see my progress over time, so that I can get a clear insight on my progress. & High & S4 \\
+	As a user, I want to track progress toward fitness goals, so that I can get a clear insight on my progress. & Medium & S4 \\
+	As an admin, I can review AI recommendation logs & Low & S4 \\
+	As a user, I want to enable my camera during workouts so the AI can analyse my posture & Low & S4 \\
+	As a user, I want to receive feedback when my posture is incorrect. & Low & S4 \\
+	% YOUR DATA END
+	
+\end{xltabular}
+
+
+\section{Sprint Backlog}
+\subsection{Sprint 1}
+% TODO: Add Sprint 1 backlog figure
+
+\subsection{Sprint 2}
+% TODO: Add Sprint 2 backlog figure
+
+\section{Requirements Specification}
+
+\subsection{Functional Requirements}
+% TODO: Use case scenarios + diagrams
+
+\subsection{Non-Functional Requirements}
+% TODO: Performance, scalability, usability metrics
+
+\section{Project Considerations}
+
+\subsection{Project Constraints}
+\subsection{Project Limitations}
+\subsection{Project Delimitations}
+\subsection{Project Assumptions}
+\subsection{Project Standards}
+\subsection{Business, Social and Ethical Considerations}
+
+\section{Conclusion}

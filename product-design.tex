@@ -1,0 +1,131 @@
+% CHAPTER 3 — PRODUCT DESIGN
+
+\chapter{Product Design}
+
+\section{Introduction}
+This chapter presents the complete design of the BodyQ system at two
+levels of abstraction. The high-level design section describes the
+overall system architecture and the decomposition of the platform into
+its major components. The detailed design section presents the key
+interaction flows as sequence diagrams, the process models as activity
+diagrams, and the data model as a class/entity description. The chapter
+concludes with an overview of the user interface design.
+
+\section{High-Level Design}
+
+\subsection{Architecture Overview}
+BodyQ is structured as a four-tier distributed system consisting of a
+mobile client, a backend-as-a-service layer, a serverless AI engine
+layer, and a web administration interface.
+
+\textbf{Tier~1 --- Mobile Client (React Native / Expo SDK~54).}
+The mobile application is built with React Native and Expo SDK~54 and
+targets iOS~16+ and Android~11+. It is organized using the Expo Router
+file-based navigation system. Application state is managed with Zustand
+for global stores (authentication, user profile, active workout session)
+and TanStack Query for server state and cache management. Forms are
+handled with React Hook Form and validated using Zod schema definitions.
+
+\textbf{Tier~2 --- Backend-as-a-Service (Supabase).}
+Supabase provides the entire backend infrastructure: a managed
+PostgreSQL~15 database, an authentication service (email/password and
+Google OAuth~2.0), object storage for meal photos and profile images,
+and Edge Functions running on the Deno runtime. Row Level Security
+policies are applied to every table in the schema to enforce user data
+isolation at the database level.
+
+\textbf{Tier~3 --- AI Engine Layer.}
+The AI engine is implemented as five Supabase Edge Functions:
+
+\texttt{ai-assistant} (RAG conversational coaching)
+
+\texttt{daily-tip} (daily AI insights)
+
+\texttt{analyze-food} (meal photo recognition)
+
+\texttt{generate-workout-plan} (personalized training programs)
+
+\texttt{recommendation-engine} (rule-based recommendations).
+
+These functions invoke the Claude API (Anthropic), the Groq inference platform(\texttt{llama-3.1-8b-instant}) or (\texttt{llama-3.3-70b-instant}), or the Google Gemini Vision API
+depending on the task requirements and latency constraints.
+
+\textbf{Tier~4 --- Administration Dashboard (React 18.0, Next.js~14).}
+A web-based administration dashboard built with React 18.0, Next.js~14 (App Router) and Tailwind CSS provides operational management. 
+All Supabase calls from the dashboard use the service role key exclusively via server-side Route Handlers.
+
+\subsection{Component Diagrams}
+% TODO: UML Component diagram
+
+\section{Detailed Design}
+
+\subsection{Sequence Diagrams}
+\textbf{SD-01: User Registration and AI-Personalized Onboarding.}
+
+\begin{enumerate}
+	\item User submits the registration form; mobile client calls
+	\texttt{supabase.auth.signUp()}.
+	\item Supabase Auth creates the user record and returns a session JWT.
+	\item Mobile client navigates to onboarding; user completes all
+	5~steps; collected data is buffered in a Zustand
+	\texttt{onboardingStore}.
+	\item On step~5 completion, the mobile client calls the
+	\texttt{generate-workout-plan} Edge Function with the user profile
+	JSON.
+	\item The Edge Function invokes the Claude API and receives a
+	personalized 4-week workout plan as structured JSON.
+	\item The Edge Function computes BMR and TDEE; inserts records into
+	\texttt{profiles} and \texttt{calorie\_targets}.
+	\item The mobile client stores the plan and navigates to the Home tab.
+\end{enumerate}
+
+\textbf{SD-02: RAG Coaching Pipeline (Yara AI Assistant).}
+
+\begin{enumerate}[noitemsep]
+	\item User types a question in the AI assistant chat screen.
+	\item Mobile client calls
+	\texttt{supabase.functions.invoke('ai-assistant')} with
+	\texttt{\{userId, query\}}.
+	\item \textbf{Retrieve:} Edge Function executes four SQL queries---7-day
+	\texttt{daily\_activity} window, 7-day \texttt{food\_logs}
+	aggregated by day, active \texttt{calorie\_targets}, and last~5
+	\texttt{workout\_sessions}.
+	\item \textbf{Augment:} Retrieved records are formatted into a
+	structured plain-text context block; out-of-range values (e.g.,
+	sleep $<6$\,h, hydration $<1500$\,mL) are flagged with warning
+	markers; four behavioral rules are appended.
+	\item \textbf{Generate:} Augmented prompt is sent to the Groq API
+	(\texttt{Llama3.3 70b}).
+	\item Edge Function inserts the response into \texttt{ai\_insights}
+	(\texttt{type='chat'}) and returns it to the mobile client.
+\end{enumerate}
+
+\textbf{SD-03: Posture Detection During Workout.}
+
+\begin{enumerate}[noitemsep]
+	\item User taps ``PostureAI'' during an active workout session.
+	\item Mobile client renders \texttt{PostureScreen} with an Expo
+	WebView component.
+	\item WebView HTML loads MediaPipe Pose JS from CDN, initializes the
+	model, and starts the device camera via \texttt{getUserMedia}.
+	\item At each video frame, MediaPipe detects 33~landmarks; the array
+	is serialized to JSON and posted to React Native via
+	\texttt{window.ReactNativeWebView.postMessage()}.
+	\item \texttt{PostureEngine.analyzeSquat(landmarks)} is called; joint
+	angles are computed using the vector dot-product formula and
+	evaluated against reference ranges; rep direction changes are
+	tracked.
+	\item Score, feedback strings, and rep count are rendered on the
+	overlay UI in real time.
+\end{enumerate}
+
+\subsection{Activity Diagrams}
+% TODO: Workout session flow, onboarding flow
+
+\subsection{Class Diagram}
+% TODO: Based on DB schema
+
+\section{UI Design}
+% TODO: Wireframes / mockups
+
+\section{Conclusion}

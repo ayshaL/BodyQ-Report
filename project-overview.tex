@@ -1,0 +1,251 @@
+% CHAPTER 1 — PROJECT OVERVIEW
+
+\chapter{Project Overview}
+
+\section{Introduction}
+The global fitness and wellness industry has undergone a profound transformation over the past decade, driven by the rapid proliferation of smartphones, wearable devices, and artificial intelligence technologies. Digital fitness applications have emerged as a primary means by which individuals monitor their health, plan their training, and seek nutritional guidance. According to market research, the global digital health market is projected to exceed \$500 billion by 2030, with mobile fitness applications representing one of its fastest-growing segments.
+
+Despite this growth, a critical gap persists between what users need and what existing applications deliver. Most fitness platforms operate on static, rule-based logic: they recommend generic workout plans, apply uniform calorie targets, and offer no meaningful adaptation to the individual's evolving physiological state, behavioral patterns, or recovery capacity. The result is an experience that feels impersonal, fails to sustain long-term engagement, and, critically, provides no real-time feedback on whether the user is performing exercises safely and correctly.
+
+Advances in large language models (LLMs), computer vision, and Retrieval-Augmented Generation (RAG) now make it technically feasible to build a fitness assistant that behaves more like a knowledgeable personal coach and assistant than a passive data logger.
+\textbf{BodyQ} is a platform developed to realize this vision: an AI-powered health and fitness assistant that combines personalized coaching, on-device computer vision for posture analysis and correction, intelligent nutritional tracking, personalized workout recomendations, and behavioral correlation based on the user metrics, all delivered through constant tracking, reminders and motivation in a holistic experience.
+
+\section{Problem Definition}
+
+The central problem BodyQ addresses can be decomposed into four distinct,
+interconnected challenges that existing solutions have consistently
+failed to resolve simultaneously.
+
+\subsection*{Lack of Genuine Personalization}
+
+Commercial fitness applications collect user data during onboarding but
+rarely use this data in a truly adaptive manner. Workout plans are drawn
+from predefined templates, calorie targets are calculated once and never
+revised, and nutritional advice is generic. There is no mechanism by
+which the application reasons about the user's specific combination of
+sleep quality, hydration level, training load, and hormonal cycle to
+adjust its recommendations dynamically. Users are treated as instances
+of a demographic category rather than as unique individuals.
+
+\subsection*{Absence of Real-Time Exercise Feedback}
+
+Incorrect exercise form is the leading cause of training-related injuries
+among recreational athletes. Yet no mainstream consumer fitness
+application provides real-time biomechanical feedback during exercise
+execution. Users must rely on periodic check-ins with a human trainer---
+an option that is expensive and logistically impractical---or on their
+own subjective perception of form, which is frequently inaccurate,
+particularly for beginners.
+
+\subsection*{Fragmented Health Data with No Correlation Layer}
+
+Modern users generate substantial volumes of health data across multiple
+dimensions: step counts, sleep duration, caloric intake, macronutrient
+splits, water consumption, and workout sessions. However, virtually all
+consumer applications treat these data streams as independent silos. No
+analysis is performed to surface meaningful cross-domain correlations---
+for example, the relationship between sleep duration and next-day workout
+performance, or between protein intake and strength progression.
+
+
+\section{Project Description}
+
+BodyQ is a cross-platform mobile application targeting iOS and Android,
+built with React Native and the Expo SDK. It provides an integrated
+health and fitness coaching experience centered on four core capabilities:
+
+\textbf{AI-Powered Personalized Coaching via RAG:} At the heart of
+BodyQ is an AI coaching assistant named \textit{Yara}. Yara is powered
+by a Retrieval-Augmented Generation pipeline implemented as a Supabase
+Edge Function. When a user poses a question or requests guidance, the
+system retrieves the user's recent health data from the Supabase
+PostgreSQL database, injects this context into a structured prompt, and
+sends the augmented prompt to the Claude API or the Groq inference
+platform. The response is then persisted to the \texttt{ai\_insights}
+table and delivered to the user.
+
+\textbf{Computer Vision Posture Detection.} BodyQ integrates
+MediaPipe's Pose solution to provide real-time biomechanical feedback
+during exercise execution. The system runs MediaPipe's JavaScript
+library inside an Expo WebView, accesses the device camera via
+\texttt{getUserMedia}, and transmits 33 three-dimensional pose landmarks
+to the React Native layer. A custom \texttt{PostureEngine} module
+processes these landmarks, calculates joint angles using vector
+mathematics, and evaluates form quality against exercise-specific
+biomechanical rules. The engine supports automatic rep counting and
+generates a posture score between 0 and 100.
+
+\textbf{Intelligent Nutrition Tracking.} The nutrition module supports
+three food logging modalities: manual text search, barcode scanning via
+the Open Food Facts API, and AI-powered photo recognition using the
+Google Gemini Vision API or Claude's vision capabilities. The system
+calculates BMR using the Mifflin-St~Jeor equation and derives TDEE and
+macronutrient targets based on the user's activity level and fitness
+goal.
+
+\textbf{Behavioral Correlation and Cycle-Aware Adaptation.} A weekly
+correlation engine computes Pearson correlation coefficients across
+30 days of user data to surface statistically significant cross-domain
+relationships. For female users, a cycle tracking module records
+menstrual phase data and adjusts workout intensity recommendations,
+nutritional targets, and hydration goals across the four phases of the
+cycle.
+
+The application is supported by a web-based administration dashboard
+built with Next.js~14, providing content management, user management, and
+platform analytics. The entire backend is hosted on Supabase, providing
+PostgreSQL storage, authentication, file storage, and serverless Edge
+Functions on the Deno runtime.
+
+
+\section{Vulnerabilities and Existing Solutions}
+A survey of the fitness application landscape reveals several
+well-established products, each addressing a subset of the problem space
+but falling short of a comprehensive, adaptive coaching experience.
+
+\textbf{MyFitnessPal} is the dominant nutrition tracking application,
+with a food database exceeding 14 million items. However, it provides no
+workout coaching, no exercise form feedback, no AI-driven personalization
+of nutritional targets, and no correlation of nutrition data with
+training performance. It operates as a passive log rather than an active
+coach.
+
+\textbf{Nike Training Club} offers guided workout videos with structured
+training plans but lacks nutritional tracking entirely. It provides no
+real-time form feedback during exercise execution, and workout
+recommendations are not adapted to the user's physiological state.
+
+\textbf{Freeletics} employs AI to generate adaptive training plans and
+adjusts workout difficulty based on user feedback. This represents a
+closer approximation to personalization, but the system relies on
+user-reported perceived exertion rather than objective biomechanical
+data. Nutritional integration is minimal.
+
+\textbf{Whoop} addresses recovery monitoring through wearable hardware,
+providing HRV-based readiness scores and sleep analysis. However, it
+requires a proprietary wearable device, operates on a subscription model,
+and provides no workout planning, form feedback, or nutritional tracking.
+
+Table~\ref{tab:comparison} summarizes the competitive analysis.
+
+\begin{table}[H]
+	\centering
+	\caption{Competitive Analysis of Existing Fitness Applications}
+	\label{tab:comparison}
+	\begin{tabularx}{\textwidth}{Xccccc}
+		\toprule
+		\textbf{Feature} & \textbf{MyFitnessPal} & \textbf{Nike TC}
+		& \textbf{Freeletics} & \textbf{Whoop} & \textbf{BodyQ} \\
+		\midrule
+		Nutrition tracking      & \checkmark & $\times$   & $\times$   & $\times$   & \checkmark \\
+		Workout planning        & $\times$   & \checkmark & \checkmark & $\times$   & \checkmark \\
+		Real-time form feedback & $\times$   & $\times$   & $\times$   & $\times$   & \checkmark \\
+		AI personalization      & $\times$   & $\times$   & Partial    & $\times$   & \checkmark \\
+		Behavioral correlation  & $\times$   & $\times$   & $\times$   & Partial    & \checkmark \\
+		Cycle-aware coaching    & $\times$   & $\times$   & $\times$   & $\times$   & \checkmark \\
+		No hardware required    & \checkmark & \checkmark & \checkmark & $\times$   & \checkmark \\
+		\bottomrule
+	\end{tabularx}
+\end{table}
+
+\section{Proposed Solution}
+BodyQ proposes a unified, AI-native fitness and health platform that
+addresses each identified gap through four differentiating capabilities.
+
+\textbf{Differentiator 1: Contextual AI Coaching via RAG.}
+Rather than providing generic advice, BodyQ's coaching engine retrieves
+the user's actual health data before generating any response. The
+Retrieve-Augment-Generate pipeline ensures recommendations are always
+grounded in the user's specific context: their caloric deficit for the
+week, sleep quality over the past seven days, protein intake relative to
+target, and recent workout load. The user's \texttt{assistant\_tone}
+preference---strict, motivational, or neutral---personalizes not just
+the substance but the style of coaching communication.
+
+\textbf{Differentiator 2: On-Device Computer Vision for Exercise Form.}
+The posture detection engine runs entirely on the user's device using
+MediaPipe, requiring no server-side video processing and preserving user
+privacy. The \texttt{PostureEngine} evaluates joint angles against
+biomechanical reference ranges for each supported exercise, counts
+repetitions automatically, and provides a quantitative posture score
+alongside qualitative feedback strings.
+
+\textbf{Differentiator 3: Multi-Modal Food Recognition.}
+BodyQ reduces the friction of nutritional logging by supporting three
+input methods within a single interface: text search, barcode scan, and
+AI photo analysis. The AI photo recognition feature uses large vision
+models to identify food items from a photograph, estimate portion sizes,
+and calculate nutritional content, with a confidence score and editable
+results.
+
+\textbf{Differentiator 4: Cross-Domain Behavioral Correlation.}
+The weekly correlation engine surfaces meaningful relationships between
+health metrics. By computing statistically significant correlations across
+sleep, nutrition, hydration, and workout data, the system generates
+insights such as ``You perform 18\% better on days when you sleep more
+than 7 hours,'' giving users an evidence-based understanding of their
+behavioral patterns.
+
+\section{Literature Review}
+
+The design of BodyQ draws on research across three primary domains:
+Retrieval-Augmented Generation, computer vision for biomechanical
+analysis, and mobile health application design.
+
+\subsection*{Retrieval-Augmented Generation}
+
+Retrieval-Augmented Generation was introduced by Lewis et al.
+\cite{lewis2020rag} as a method for grounding language model outputs in
+external knowledge retrieved at inference time. The approach addresses a
+fundamental limitation of parametric language models: their knowledge is
+fixed at training time. By retrieving relevant data from an external
+store and injecting it into the prompt, RAG enables language models to
+produce responses that are specific, current, and verifiable.
+
+In the context of BodyQ, the retrieved data consists of structured
+relational records from the \texttt{daily\_activity}, \texttt{food\_logs},
+\texttt{calorie\_targets}, and \texttt{workout\_sessions} tables. This
+schema-driven retrieval strategy aligns with the observations of Shi
+et al. \cite{shi2023irrelevant}, who demonstrated that irrelevant context
+in RAG prompts degrades generation quality---motivating a selective,
+precise retrieval approach.
+
+\subsection*{Computer Vision for Biomechanical Analysis}
+
+Cao et al. \cite{cao2017realtime} introduced OpenPose, a real-time
+multi-person pose estimation system that established the paradigm of
+detecting body keypoints as a precursor to biomechanical analysis.
+Subsequent work by the MediaPipe team \cite{bazarevsky2020blazepose}
+produced BlazePose, a lightweight model capable of detecting 33
+three-dimensional body landmarks at real-time frame rates on mobile
+devices---the model BodyQ employs.
+
+\subsection*{LLM-Based Health Coaching}
+
+Singhal et al. \cite{pal2023medpalm} demonstrated that appropriately
+prompted LLMs can achieve expert-level performance on medical
+question-answering benchmarks. However, grounding LLM outputs in
+verified, user-specific data is essential to prevent hallucination.
+BodyQ's architecture addresses this by routing all AI coaching
+interactions through the RAG pipeline.
+
+\subsection*{Mobile Health Application Design}
+
+Research on user engagement with mobile health applications has
+consistently identified personalization, timely feedback, and low
+interaction friction as the primary determinants of long-term adherence
+\cite{linardon2020engagement}. BodyQ responds by minimizing food log
+entry steps, integrating coaching directly into the workout session flow,
+and supporting multiple AI tone preferences.
+
+\section{Conclusion}
+
+This chapter has established the context, motivation, and scope of the
+BodyQ project. The fitness application market is characterized by
+solutions that optimize for narrow dimensions of the user's health
+experience without delivering genuine, data-grounded personalization.
+BodyQ addresses this gap by integrating four technically distinct
+capabilities into a unified mobile platform. Chapter~2 defines the
+product specifications; Chapter~3 presents the system design; Chapter~4
+documents the implementation; Chapter~5 concludes with outcomes and
+future work.
