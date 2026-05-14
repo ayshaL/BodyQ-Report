@@ -57,7 +57,10 @@ in Table~\ref{tab:sprints}.
 		& Week~7 & Week~8 \\[3pt]
 		Sprint~5 --- Polish \& Ship
 		& Testing, bug fixes,UI animations, performance optimization, experimenting with  wearable device
-		& Week~9 & Week~9 \\
+		& Week~9 & Week~10 \\
+		Sprint~6 --- Merginf \& Deployment
+		& Final testing, conflict resolution, deployment,
+		& Week~11 & Week~12 \\
 		\bottomrule
 	\end{tabularx}
 \end{table}
@@ -86,28 +89,51 @@ in Table~\ref{tab:sprints}.
 	
 	% YOUR DATA START
 	As a user, I want to create an account so that my data is saved securely. & High & S1 \\
+	
 	As a user, I want an easy to use dashboard, so I can see my daily progress overview. & High & S1 \\
+	
 	As a user, I receive personalized calorie and macro targets & High & S1 \\
+	
 	As a user, I want to define my age, height, weight, goals, and experience level so the system can personalise recommendations. & High & S1 \\
+	
 	As a user, I can browse and search the exercise library & High & S2 \\
+	
 	As a user, I want to receive reminders for workouts, hydration, and sleep, so i can be on track & High & S2 \\
+	
 	As a user, I can log my meals and track & High & S2 \\
+	
 	As a user, I want to track my daily steps, so that I can monitor my activity level. & High & S2 \\
+	
 	As a user, I want the app to record my workout duration and exercises performed, so that I can get a clear insight on my progress. & High & S3 \\
+	
 	As a user, I want to view a list of supported exercises with instructions, so that I can choose what suits me better & High & S3 \\
+	
 	As a user, I want to receive daily motivational quotes, so that I feel inspired to stay active. & High & S3 \\
+	
 	As a user, I want to be able to customise my dashboard view, so that it fits my preferences. & High & S3 \\
+	
 	As a user, I want to earn rewards for completing my fitness goals, so that I can stay motivated. & Medium & S2 \\
+	
 	As a user, I want to receive AI-generated health advice based on my habits. & Medium & S3 \\
+	
 	As a user, I want to log my daily water intake, so that I can get a clear insight on my progress. & Medium & S3 \\
+	
 	As a user, I want to log my sleep duration, so that I can get a clear insight on my progress. & Medium & S4 \\
+	
 	As a user, I want to log meals manually, so that I can track my calorie intake, so that I can get a clear insight on my progress. & Medium & S4 \\
+	
 	As a user, I want to scan food using my camera to estimate calories. & Medium & S4 \\
+	
 	As a user, I want to see calorie summaries and suggestions, so that I can fit my diet to my workout. & Medium & S4 \\
+	
 	As a user, I want to see my progress over time, so that I can get a clear insight on my progress. & High & S4 \\
+	
 	As a user, I want to track progress toward fitness goals, so that I can get a clear insight on my progress. & Medium & S4 \\
+	
 	As an admin, I can review AI recommendation logs & Low & S4 \\
+	
 	As a user, I want to enable my camera during workouts so the AI can analyse my posture & Low & S4 \\
+	
 	As a user, I want to receive feedback when my posture is incorrect. & Low & S4 \\
 	% YOUR DATA END
 	
@@ -116,26 +142,533 @@ in Table~\ref{tab:sprints}.
 
 \section{Sprint Backlog}
 \subsection{Sprint 1}
-% TODO: Add Sprint 1 backlog figure
+Sprint~1 established the application's technical foundation. The team
+delivered a full PostgreSQL schema spanning 18 tables covering user
+profiles, workout sessions, food logs, daily activity, body metrics, and
+AI insights. User authentication via email/password and Google
+OAuth~2.0 was configured through Supabase Auth. A ten-step onboarding
+questionnaire was developed to collect fitness goals, body metrics (height,
+weight, and target weight), experience level, available equipment, preferred
+weekly schedule, dietary restrictions, and lifestyle indicators (sleep
+quality and stress level). Upon completion the questionnaire feeds a
+Supabase Edge Function that invokes the \textbf{Groq Llama~3.1-8B} model
+to generate a personalised multi-week training plan with calibrated daily
+calorie and macronutrient targets derived from BMR and TDEE calculations.
+On the administration side, the Next.js~14 dashboard was scaffolded with
+Supabase service-role credentials and an initial user-management table view.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=\textwidth]{images/Sprint1-backlog.png}
+	\caption{Sprint 1 JIRA Backlog}
+	\label{fig:sprint1}
+\end{figure}
 
 \subsection{Sprint 2}
-% TODO: Add Sprint 2 backlog figure
+Sprint~2 delivered the core tracking modules. The workout module was
+completed with an exercise library, an active workout session screen that
+records sets, reps, weight, and elapsed time per exercise, and a
+post-workout summary. Nutrition logging was implemented with three
+complementary input modes: text search across the food reference database,
+barcode scanning via the device camera (\texttt{expo-camera}), and manual
+macro entry. A water-intake tracker with a configurable daily goal ring and
+a dedicated sleep log screen were also delivered. The home dashboard was
+built to display real-time progress rings for calories, protein, water, and
+step count, sourced from the \texttt{daily\_activity} PostgreSQL table
+through parameterised Supabase RPC calls.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=\textwidth]{images/Sprint2-backlog.png}
+	\caption{Sprint 2 JIRA Backlog}
+	\label{fig:sprint2}
+\end{figure}
+
+\subsection{Sprint 3}
+Sprint~3 introduced the AI-powered features. The PostureAI screen was
+built using an Expo WebView running MediaPipe Pose, with a custom
+\texttt{PostureEngine} module computing joint angles and counting
+repetitions in real time. The Yara RAG coaching assistant was
+implemented as a Supabase Edge Function that retrieves seven days of
+user activity, nutrition, and workout data before querying the Groq
+API to generate contextualised coaching responses. AI food photo
+recognition via the Gemini Vision API and a daily tip Edge Function
+were also delivered.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=\textwidth]{images/Sprint3-backlog.png}
+	\caption{Sprint 3 JIRA Backlog}
+	\label{fig:sprint3}
+\end{figure}
+
+\subsection{Sprint 4}
+Sprint~4 extended the platform with advanced personalisation features.
+A Pearson correlation engine was implemented to surface weekly
+relationships between sleep, hydration, nutrition, and workout
+performance on the Insights screen. Menstrual cycle tracking was
+added with phase-aware adjustments to calorie targets, workout
+intensity, and hydration goals. The administration dashboard was
+extended with AI log review, aggregate platform analytics, and user
+soft-deletion.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=\textwidth]{images/Sprint4-backlog.png}
+	\caption{Sprint 4 JIRA Backlog}
+	\label{fig:sprint4}
+\end{figure}
+
+\subsection{Sprint 5}
+Sprint~5 focused on stability, polish, and integration testing. Known
+bugs were resolved, including the food scanner \texttt{.map} crash
+caused by undefined API responses and a missing Gemini API key
+configuration. UI animations were added, an \texttt{AppTour} onboarding
+overlay was implemented, and end-to-end integration tests were run
+across all modules to verify feature interactions before merging.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=\textwidth]{images/Sprint5-backlog.png}
+	\caption{Sprint 5 JIRA Backlog}
+	\label{fig:sprint5}
+\end{figure}
+
+\subsection{Sprint 6}
+Sprint~6 covered branch consolidation and deployment. All feature
+branches were merged into \texttt{main} via the \texttt{israa/merging}
+integration branch, with conflicts resolved and a final regression test
+pass completed. The Supabase production environment was configured with production API keys and RLS policies verified, EAS builds were
+generated for both iOS and Android, and the administration dashboard
+was deployed independently.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=\textwidth]{images/Sprint6-backlog.png}
+	\caption{Sprint 6 JIRA Backlog}
+	\label{fig:sprint6}
+\end{figure}
 
 \section{Requirements Specification}
 
 \subsection{Functional Requirements}
 % TODO: Use case scenarios + diagrams
 
+The functional requirements of BodyQ are expressed as use cases derived
+from the product backlog. Table~\ref{tab:usecases} provides a concise
+overview of the ten principal use cases; detailed scenario descriptions
+follow.
+
+\begin{table}[H]
+	\centering
+	\caption{Use Case Overview}
+	\label{tab:usecases}
+	\begin{tabularx}{\textwidth}{llXl}
+		\toprule
+		\textbf{ID} & \textbf{Name} & \textbf{Description} & \textbf{Actor} \\
+		\midrule
+		BOD-01 & Register Account      & Create a new account with email/password or Google OAuth~2.0 & User \\[3pt]
+		BOD-02 & Complete Onboarding   & Answer a 10-step questionnaire and receive an AI-generated training plan & User \\[3pt]
+		BOD-03 & Log Workout Session   & Record an active workout with exercises, sets, reps, and weights & User \\[3pt]
+		BOD-04 & Log Nutrition         & Add food entries via text search, barcode scan, or AI photo recognition & User \\[3pt]
+		BOD-05 & Log Daily Metrics     & Record water intake, sleep duration, or body weight & User \\[3pt]
+		BOD-06 & Interact with AI Coach & Query Yara for personalised health and fitness coaching & User \\[3pt]
+		BOD-07 & Use Voice Interface   & Issue spoken commands to navigate and log data hands-free & User \\[3pt]
+		BOD-08 & Posture Detection     & Enable camera during a workout for real-time form feedback & User \\[3pt]
+		BOD-09 & View Insights         & Browse analytics, activity heatmaps, and AI insight cards & User \\[3pt]
+		BOD-10 & Administer System     & Monitor user registrations and AI interaction logs & Admin \\
+		\bottomrule
+	\end{tabularx}
+\end{table}
+
+\paragraph{BOD-01 — Register Account.}
+\textit{Actor}: unauthenticated user.
+\textit{Precondition}: the user has not previously registered.
+\textit{Main flow}: the user opens the registration screen, enters a valid
+email address and password (or taps the Google sign-in button), and
+confirms. Supabase Auth creates an account and inserts a corresponding row
+in the \texttt{profiles} table with default values.
+\textit{Postcondition}: the user is authenticated and redirected to the
+onboarding flow.
+
+\paragraph{BOD-02 — Complete Onboarding.}
+\textit{Actor}: newly registered user.
+\textit{Precondition}: the user has a valid account but no saved fitness
+profile.
+\textit{Main flow}: the user progresses through ten sequential screens
+collecting goals (fat loss, muscle gain, maintain, or performance), body
+metrics (height, weight, target weight), training experience, available
+equipment, preferred days per week, session duration, time of day,
+focus muscle groups, injury limitations, dietary preferences, and lifestyle
+indicators. On submission the \texttt{onboarding-plan} Edge Function
+invokes the Groq Llama~3.1-8B model to synthesise a personalised
+$n$-day training plan; the plan and computed daily calorie and macro targets
+are persisted in the user's profile.
+\textit{Postcondition}: the user has a saved fitness profile and a
+ready-to-use personalised training plan.
+
+\paragraph{BOD-03 — Log Workout Session.}
+\textit{Actor}: authenticated user.
+\textit{Precondition}: the user has an active training plan.
+\textit{Main flow}: the user navigates to the Training screen, selects the
+current workout day, and starts the session. For each exercise the user
+logs the number of sets, reps, and weight, and marks the set as complete.
+When all exercises are finished the user ends the session; a workout summary
+screen displays total duration and estimated calories burned.
+\textit{Postcondition}: a \texttt{workout\_sessions} record and associated
+\texttt{workout\_exercises} records are created; XP points are awarded and
+recorded in \texttt{xp\_log}; muscle fatigue state is updated for the
+trained groups.
+
+\paragraph{BOD-04 — Log Nutrition.}
+\textit{Actor}: authenticated user.
+\textit{Precondition}: the user is authenticated.
+\textit{Main flow}: the user opens the Nutrition screen and selects one of
+three input methods---text search of the food reference database, barcode
+scanning via the device camera (\texttt{expo-camera}), or AI photo
+recognition powered by Google Gemini Vision. After identifying the food
+item and confirming the portion size and meal type, the entry is saved.
+\textit{Postcondition}: a \texttt{food\_logs} record is created; daily
+calorie and macro totals on the home dashboard are updated.
+
+\paragraph{BOD-05 — Log Daily Metrics.}
+\textit{Actor}: authenticated user.
+\textit{Precondition}: the user is authenticated.
+\textit{Main flow}: the user taps a logging widget on the Home screen or
+the dedicated Sleep Log screen, enters a value (water in millilitres, sleep
+in hours, or body weight in kilograms), and confirms.
+\textit{Postcondition}: the \texttt{daily\_activity} table (water and
+sleep) or \texttt{body\_metrics} table (weight) is updated; the relevant
+progress ring on the home dashboard reflects the new value in real time.
+
+\paragraph{BOD-06 — Interact with AI Coach.}
+\textit{Actor}: authenticated user.
+\textit{Precondition}: the user is authenticated; Groq API access is
+available.
+\textit{Main flow}: the user opens the Yara coaching screen and types a
+natural-language question. The \texttt{ai-assistant} Edge Function
+classifies the query intent (activity, nutrition, workout, body metrics, or
+history), fetches the relevant data subsets via Supabase RPCs, enriches the
+context with semantically retrieved historical embeddings, and calls the
+Groq Llama~3.3-70B model to generate a response. The response is returned
+to the mobile client and persisted as an \texttt{ai\_insights} record.
+\textit{Postcondition}: the user receives a data-grounded coaching reply;
+the interaction is logged for subsequent coaching context.
+
+\paragraph{BOD-07 — Use Voice Interface.}
+\textit{Actor}: authenticated user.
+\textit{Precondition}: the device microphone is available; internet
+connectivity is active.
+\textit{Main flow}: the user presses the Alexi voice button. A voice
+activity detection loop records audio until silence is detected; the audio
+is sent to the \texttt{ai-assistant} Edge Function, which transcribes it
+via Groq Whisper (or OpenAI Whisper as primary). The transcript is
+processed as a coaching query in voice mode. Any embedded
+\texttt{COMMAND:\{...\}} blocks in the AI reply are parsed and executed
+client-side (logging water, sleep, food, workouts, or triggering
+navigation).
+\textit{Postcondition}: the spoken command is executed without the user
+touching the screen; a spoken audio response is played back via
+\texttt{expo-speech}.
+
+\paragraph{BOD-08 — Posture Detection.}
+\textit{Actor}: authenticated user.
+\textit{Precondition}: the device camera is available; the user is in an
+active workout session.
+\textit{Main flow}: the user activates the posture camera within the
+WorkoutActive screen. A WebView loads the MediaPipe Pose estimation
+pipeline, which processes camera frames and computes joint angles in real
+time. Feedback cues (e.g.\ knee alignment, spinal curvature) and a live
+repetition count are displayed as overlays. When the set ends, the session
+receives an average posture score.
+\textit{Postcondition}: the workout session record is updated with an
+average posture score; the user has received actionable form corrections
+during the exercise.
+
+\paragraph{BOD-09 — View Insights.}
+\textit{Actor}: authenticated user.
+\textit{Precondition}: the user has at least some logged data.
+\textit{Main flow}: the user navigates to the Insights screen and selects
+a reporting period (Week, Month, or 3~Months). The screen calls the
+\texttt{get\_insights\_data} Supabase RPC for chart and heatmap data,
+queries \texttt{food\_logs} and \texttt{workout\_sessions} directly for
+summary statistics, and fetches cached AI insight cards (or regenerates
+them via the \texttt{yara-insights} Edge Function when the cache is stale).
+\textit{Postcondition}: the user can view activity heatmaps, macro
+breakdown charts, muscle recovery state, and four AI-generated insight
+cards categorised by tag (Performance, Nutrition, Recovery, Correlation,
+Optimisation, or Prediction).
+
+\paragraph{BOD-10 — Administer System.}
+\textit{Actor}: administrator.
+\textit{Precondition}: the administrator has service-role credentials.
+\textit{Main flow}: the administrator authenticates via the Next.js~14
+web dashboard, browses the user registration table, and inspects AI
+coaching interaction logs sourced from \texttt{ai\_insights}.
+\textit{Postcondition}: the administrator has visibility into platform
+usage, user registrations, and AI behaviour without direct database access.
+
+\begin{xltabular}{\textwidth}{llX}
+	\caption{Functional Requirements for the BodyQ System} \label{tab:functional_requirements} \\
+	\toprule
+	\textbf{ID} & \textbf{Category} & \textbf{Requirement Description} \\
+	\midrule
+	\endfirsthead
+	
+	\multicolumn{3}{c}{{\bfseries \tablename\ \thetable{} -- Continued from previous page}} \\
+	\toprule
+	\textbf{ID} & \textbf{Category} & \textbf{Requirement Description} \\
+	\midrule
+	\endhead
+	
+	\midrule
+	\multicolumn{3}{r}{{Continued on next page...}} \\
+	\endfoot
+	
+	\bottomrule
+	\endlastfoot
+	
+	% --- User Management ---
+	FR-01 & User Mgmt & The system shall allow users to register using an email address and password. \\ \addlinespace[3pt]
+	FR-02 & User Mgmt & The system shall allow users to view and update their profile information at any time after onboarding. \\ \addlinespace[3pt]
+	FR-03 & User Mgmt & On first login, the system shall present a 7-step onboarding flow and collect the user's age, biological sex, height, current weight, fitness goal, activity level, and training experience. \\ \addlinespace[3pt]
+	FR-04 & User Mgmt & The system shall calculate the user's BMR using the Mifflin-St\,Jeor equation and derive TDEE and macronutrient targets from profile data. \\ \addlinespace[6pt]
+	
+	% --- Workout & Exercise ---
+	FR-05 & Workout & The system shall provide a searchable exercise library with names, descriptions, targeted muscle groups, and instructions. \\ \addlinespace[3pt]
+	FR-06 & Workout & The system shall allow users to start a workout session and add exercises from the library, recording sets, reps, and weight. \\ \addlinespace[3pt]
+	FR-07 & Workout & The system shall display a workout summary screen upon completion showing duration, exercises, and estimated calories burned. \\ \addlinespace[6pt]
+	
+	% --- Nutrition & Tracking ---
+	FR-08 & Nutrition & The system shall allow users to log meals by searching a text-based food database. \\ \addlinespace[3pt]
+	FR-09 & Nutrition & The system shall allow users to scan a product barcode to retrieve nutritional information from the Open Food Facts API. \\ \addlinespace[3pt]
+	FR-10 & Nutrition & The system shall allow users to photograph a meal and submit it to the Gemini Vision API for AI-based calorie and macronutrient estimation. \\ \addlinespace[3pt]
+	FR-11 & Tracking & The system shall allow users to log daily water intake in millilitres. \\ \addlinespace[3pt]
+	FR-12 & Tracking & The system shall log daily step count and display it on the home dashboard. \\ \addlinespace[3pt]
+	FR-13 & Tracking & The system shall allow users to log sleep duration each night. \\ \addlinespace[3pt]
+	FR-14 & Data & The system shall persist all tracked metrics to the Supabase \texttt{daily\_activity} table with a date-stamped record per user. \\ \addlinespace[6pt]
+	
+	% --- AI Coaching ---
+	FR-15 & AI Coach & The system shall provide an AI assistant interface where users can submit natural language health and fitness questions. \\ \addlinespace[3pt]
+	FR-16 & AI Coach & The system shall support three user-configurable assistant tone preferences: strict, motivational, and neutral. \\ \addlinespace[3pt]
+	FR-17 & AI Coach & All AI coaching responses shall be persisted to the \texttt{ai\_insights} table and displayed in a chronological chat interface. \\ \addlinespace[6pt]
+	
+	% --- Posture Detection ---
+	FR-18 & Posture & The system shall provide a posture detection screen accessible from within an active workout session. \\ \addlinespace[3pt]
+	FR-19 & Posture & The posture detection screen shall load a MediaPipe Pose model inside an Expo WebView and detect 33 3D body landmarks in real-time. \\ \addlinespace[3pt]
+	FR-20 & Posture & The \texttt{PostureEngine} shall compute joint angles using vector dot-product math and evaluate form against biomechanical reference ranges. \\ \addlinespace[3pt]
+	FR-21 & Posture & The system shall display a real-time posture score (0--100) and qualitative feedback strings on the overlay interface. \\ \addlinespace[3pt]
+	FR-22 & Posture & The \texttt{PostureEngine} shall automatically count repetitions by tracking direction changes in the primary joint angle. \\ \addlinespace[6pt]
+	
+	% --- Dashboard ---
+	FR-23 & Dashboard & The home screen shall display a daily progress summary including calories, macronutrient ring charts, water intake, and step count. \\
+\end{xltabular}
+
 \subsection{Non-Functional Requirements}
 % TODO: Performance, scalability, usability metrics
+
+Table~\ref{tab:nfr} lists the non-functional requirements of the BodyQ
+system, grouped by quality attribute.
+	
+	\begin{xltabular}{\textwidth}{llXX}
+		\caption{Non-Functional Requirements} \label{tab:nfr} \\ % Caption goes inside
+		\toprule
+		\textbf{ID} & \textbf{Category} & \textbf{Requirement} & \textbf{Metric / Criterion} \\
+		\midrule
+		\endfirsthead % This defines the header for the first page
+		
+		\multicolumn{4}{c}{{\bfseries \tablename\ \thetable{} -- Continued from previous page}} \\
+		\toprule
+		\textbf{ID} & \textbf{Category} & \textbf{Requirement} & \textbf{Metric / Criterion} \\
+		\midrule
+		\endhead % This defines the header for all subsequent pages
+		
+		\bottomrule
+		\endfoot % This defines the footer for pages before the last one
+		
+		NFR-01 & Performance    & AI coaching responses must be delivered promptly & p95 end-to-end latency $\leq$ 3 s under normal network conditions \\[3pt]
+		NFR-02 & Performance    & Dashboard data queries must not block the UI & p95 Supabase RPC latency $\leq$ 1 s; screens display cached data while refreshing \\[3pt]
+		NFR-03 & Scalability    & The backend must handle concurrent users without degraded performance & Supabase managed PostgreSQL with PgBouncer connection pooling; Edge Functions are stateless and scale to zero \\[3pt]
+		NFR-04 & Availability   & The application must remain available to users & Supabase platform SLA of 99.9\% uptime; AsyncStorage cache ensures core screens remain accessible offline \\[3pt]
+		NFR-05 & Security       & User health data must be protected against unauthorised access & Row Level Security (RLS) policies enforce user-scoped access on all tables; JWT tokens are validated by Supabase Auth on every request \\[3pt]
+		NFR-06 & Security       & AI API keys must never be exposed in the mobile application & All API keys (Groq, OpenAI, Gemini) are stored as Supabase Edge Function secrets and never shipped in the Expo build artefact \\[3pt]
+		NFR-07 & Usability      & The application must target both major mobile platforms & React Native / Expo SDK~54 cross-platform build; validated on iOS~16+ and Android~11+ \\[3pt]
+		NFR-08 & Usability      & New users must be able to complete onboarding without assistance & Ten-step flow with a visible progress indicator; estimated completion time under 5 minutes \\[3pt]
+		NFR-09 & Maintainability & Source code style must be consistent across all contributors & ESLint and Prettier configurations enforced; lint output captured in \texttt{lint-report.txt} \\[3pt]
+		NFR-10 & Offline Support & Core navigation and cached user data must be accessible without network & TanStack Query stale-while-revalidate caching; AsyncStorage persistence of profile and recent dashboard statistics \\
+		\bottomrule
+	\end{xltabular}
+
 
 \section{Project Considerations}
 
 \subsection{Project Constraints}
+
+The BodyQ project operated under three primary constraints.
+
+\begin{enumerate}
+	\item \textbf{Time.} The project was delivered across a fixed
+	nine-week academic schedule divided into five sprints. No schedule
+	extension was available.
+	
+	\item \textbf{Budget.} All infrastructure services were operated on
+	free tiers. Supabase free tier provides 500~MB of managed PostgreSQL
+	storage and 500{,}000 Edge Function invocations per month. Groq API
+	access was limited to the free research tier rate limits. No financial
+	resources were available for paid cloud services or proprietary data
+	providers.
+	
+	\item \textbf{Team capacity.} The project was delivered by five
+	students who were simultaneously managing other academic commitments,
+	constraining the total development hours available per sprint and
+	requiring disciplined prioritisation of backlog items.
+\end{enumerate}
+
 \subsection{Project Limitations}
+
+Several functional limitations exist in the current prototype.
+
+\begin{itemize}
+	\item \textbf{Posture detection performance.} MediaPipe Pose is
+	delivered inside a React Native WebView rather than a native module,
+	because no production-grade React Native binding for MediaPipe was
+	available at development time. This introduces a bridge communication
+	overhead and constrains the usable camera resolution.
+	
+	\item \textbf{Voice interface connectivity.} The speech-to-text
+	pipeline relies on Groq Whisper or OpenAI Whisper cloud services.
+	The voice interface is non-functional without active internet
+	connectivity.
+	
+	\item \textbf{Food database accuracy.} Nutritional information is
+	sourced from third-party databases and user-entered data, which may
+	contain inaccuracies. The system cannot independently verify the
+	correctness of nutritional values.
+	
+	\item \textbf{Wearable integration.} Sprint~5 explored wearable
+	device data ingestion but a production-quality integration was not
+	completed within the project timeline.
+	
+	\item \textbf{Correlation engine scope.} The behavioral correlation
+	engine surfaces statistical associations between health metrics. It
+	does not account for confounding variables or apply clinical-grade
+	statistical methods.
+\end{itemize}
+
 \subsection{Project Delimitations}
+
+The following are deliberate scope boundaries established at the start of
+the project.
+
+\begin{itemize}
+	\item The system is scoped to a mobile application (iOS and Android)
+	and a web administration dashboard. No desktop client is planned.
+	
+	\item The application does not integrate with electronic medical record
+	(EMR) systems and does not provide clinical diagnosis or treatment
+	recommendations.
+	
+	\item Real-time social or multiplayer features (workout-partner
+	streaming, group challenges) are outside the scope of the current
+	prototype.
+	
+	\item The posture detection module supports a representative subset of
+	exercises in its MVP form and does not cover the full exercise library.
+\end{itemize}
+
 \subsection{Project Assumptions}
+
+The following assumptions were made during the design and development of
+BodyQ.
+
+\begin{itemize}
+	\item Users possess a smartphone running iOS~16+ or Android~11+ with a
+	functional camera and microphone.
+	
+	\item Users have reliable internet connectivity when using AI-powered
+	features such as coaching queries, voice interface, and food photo
+	recognition.
+	
+	\item Users understand that AI coaching responses are informational
+	guidance and not a substitute for professional medical or nutritional
+	advice.
+	
+	\item Nutritional data returned by third-party sources is sufficiently
+	accurate for consumer-level calorie and macronutrient tracking.
+	
+	\item Users are willing to log health data manually when automatic
+	detection is unavailable.
+\end{itemize}
+
 \subsection{Project Standards}
+
+The following standards and conventions were applied throughout the project.
+
+\begin{itemize}
+	\item \textbf{Project management.} Agile Scrum with two-week sprints,
+	sprint planning, sprint review, and retrospective ceremonies tracked on
+	a shared JIRA board.
+	
+	\item \textbf{Code style.} ESLint and Prettier enforced uniform
+	formatting across all TypeScript and JavaScript source files.
+	
+	\item \textbf{API design.} REST conventions applied to all Supabase
+	Edge Function endpoints; CORS headers configured for cross-origin
+	mobile and web access.
+	
+	\item \textbf{Database security.} Supabase Row Level Security policies
+	applied to all user-data tables, aligned with GDPR data-minimisation
+	and access-control principles.
+	
+	\item \textbf{Citation.} IEEE numeric reference style, ordered by
+	first appearance in the text.
+\end{itemize}
+
 \subsection{Business, Social and Ethical Considerations}
 
+\textbf{Privacy and data protection.} BodyQ collects sensitive health data
+including body weight, sleep duration, nutritional intake, and (optionally)
+menstrual cycle information. All personal data is stored in a Supabase
+PostgreSQL database governed by Row Level Security policies that restrict
+each authenticated user to accessing exclusively their own records. No user
+health data is transmitted to or shared with third parties beyond the AI
+inference providers strictly required for core functionality (Groq, OpenAI,
+Google Gemini).
+
+\textbf{AI transparency.} All AI-generated content---coaching messages,
+personalised workout plans, meal suggestions, and insight cards---is
+visually distinguished within the application interface. Users are not
+presented with AI-generated output as if it were advice from a human
+expert.
+
+\textbf{Health responsibility.} The application explicitly positions its
+coaching as informational guidance. Onboarding screens and AI coaching
+responses do not claim to provide medical diagnosis, clinical treatment,
+or prescribed nutritional therapy. Users are encouraged to consult
+qualified healthcare professionals for any medical decisions.
+
+\textbf{Inclusivity.} The onboarding questionnaire accommodates a wide
+range of user profiles: multiple fitness experience levels, diverse dietary
+preferences (vegetarian, vegan, halal, and other restrictions), varying
+equipment availability (home, commercial gym, bodyweight-only), and
+optional menstrual cycle tracking. This ensures the system does not
+structurally exclude underrepresented user groups.
+
+\textbf{Data minimisation.} Only the health metrics directly required by
+the coaching and analytics features are collected. No location data, social
+network information, or financial data is requested or stored.
+
+
 \section{Conclusion}
+
+This chapter presented the complete specification of the BodyQ project:
+the Agile Scrum methodology adopted for project management, the five-sprint
+development timeline with primary deliverables, the full product backlog
+with priority and sprint assignments, sprint-level delivery summaries,
+functional requirements expressed as structured use cases, non-functional
+requirements quantified as measurable metrics, and the project's
+constraints, limitations, delimitations, assumptions, applied standards,
+and ethical considerations. Together, these specifications defined the
+shared understanding between the team's ambitions and the system
+subsequently designed and implemented in the chapters that follow.
+

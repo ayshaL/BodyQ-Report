@@ -1,4 +1,146 @@
 % CHAPTER 5 — GENERAL CONCLUSION
 
 \chapter{General Conclusion \& Future Work}
-% TODO: Restate objectives, assess outcomes, recommend future work
+
+\section{Project Review}
+
+BodyQ was conceived to address a critical gap in the digital fitness
+landscape: existing applications collect health data without genuinely
+acting on it, offer static workout templates devoid of real
+personalisation, and provide no real-time feedback on exercise technique.
+Over nine weeks and five Agile Scrum sprints, a team of five students
+designed, implemented, and validated a cross-platform AI-powered fitness
+and health assistant that integrates personalisation, intelligence, and
+usability into a single coherent product.
+
+\section{Achievement of Objectives}
+
+The four core objectives stated in Chapter~1 were addressed as follows.
+
+\begin{enumerate}
+	\item \textbf{Personalisation.} A ten-step onboarding flow collects
+	goals, body metrics, experience level, available equipment, preferred
+	schedule, dietary restrictions, and lifestyle indicators. These inputs
+	feed a Supabase Edge Function that invokes the Groq Llama~3.1-8B
+	model to generate a personalised multi-week training plan with
+	calibrated daily calorie and macronutrient targets derived from BMR
+	and TDEE calculations.
+	
+	\item \textbf{Real-time form feedback.} The posture detection module
+	integrates MediaPipe Pose via a WebView bridge to compute joint angles
+	in real time during workout sessions. The system tracks repetition
+	counts and delivers live correction cues displayed as overlays on the
+	camera feed.
+	
+	\item \textbf{Cross-domain data integration.} The Yara AI coaching
+	engine (Groq Llama~3.3-70B) aggregates 30-day activity history,
+	nutrition logs, body metrics, and previous coaching interactions into
+	a single RAG-augmented prompt context before generating each response.
+	Semantic retrieval of embedded user data via OpenAI
+	\texttt{text-embedding-3-small} further enriches context with
+	historically relevant health events.
+	
+	\item \textbf{Behavioral insights.} The Insights screen produces
+	AI-generated analytics cards via the \texttt{yara-insights} Edge
+	Function, categorised by tag (Performance, Nutrition, Recovery,
+	Correlation, Optimisation, or Prediction) and parameterised by the
+	user's real activity statistics for the selected reporting period.
+\end{enumerate}
+
+Beyond the stated objectives, the project delivered a voice interface
+enabling hands-free coaching queries and data logging via OpenAI/Groq
+Whisper speech-to-text; a gamification layer comprising XP points, login
+streaks, and unlockable achievement badges; push notifications for workout
+and hydration reminders; and a Next.js~14 administration dashboard for
+monitoring user registrations and AI interaction logs.
+
+\section{Technical Challenges}
+
+Several non-trivial engineering challenges were encountered and resolved
+during development.
+
+\textbf{MediaPipe integration.} No production-grade native React Native
+binding for MediaPipe Pose was available at the project start. The solution
+was to embed the pose estimation pipeline inside a React Native WebView
+with a bi-directional JavaScript messaging interface, allowing the mobile
+application to receive per-frame joint angle and repetition data from the
+web-based MediaPipe runtime.
+
+\textbf{LLM output reliability.} Long AI prompts aggregating multiple data
+sections occasionally produced malformed JSON from the Groq API. A
+defensive repair pipeline---removing trailing commas, stripping control
+characters, and balancing unclosed brackets---was implemented to guarantee
+robust parsing without degrading the user experience.
+
+\textbf{Row Level Security and Edge Functions.} Supabase RLS policies that
+correctly restrict mobile clients to their own data must simultaneously
+permit Edge Functions---which authenticate with a service-role key---to
+read and write across all user records. Calibrating this boundary required
+careful policy design to avoid either over-permitting mobile access or
+blocking legitimate server-side operations.
+
+\textbf{Offline-first behaviour.} Network requests from the mobile
+application are not guaranteed to succeed. AsyncStorage caching of profile
+data and recent dashboard statistics ensures core functionality remains
+accessible when connectivity is unavailable, and TanStack Query's
+stale-while-revalidate strategy keeps the UI responsive during background
+refreshes.
+
+\section{Future Work}
+
+The BodyQ prototype establishes a strong technical foundation. The
+following extensions are identified as priorities for future development.
+
+\begin{enumerate}
+	\item \textbf{Wearable integration.} Sprint~5 included a preliminary
+	exploration of wearable device connectivity. A production-quality
+	integration with Apple HealthKit, Google Fit, or Bluetooth Low Energy
+	(BLE) fitness trackers would enable passive step counting, continuous
+	heart rate monitoring, and automatic workout detection without manual
+	logging.
+	
+	\item \textbf{Native posture detection.} Migrating the MediaPipe
+	pipeline from the WebView sandbox to a native Expo module (via the
+	Expo Modules API) would eliminate the WebView communication overhead,
+	improve frame processing latency, and allow full-screen camera overlays
+	during workout sessions.
+	
+	\item \textbf{Social and community features.} The community screen was
+	scaffolded but not completed within the project timeline. Future
+	iterations could implement workout sharing, friend-challenge systems,
+	and group streak competitions to reinforce behavioural adherence
+	through social accountability.
+	
+	\item \textbf{Cycle-aware coaching.} The data model and AI coaching
+	architecture already include support for menstrual cycle information.
+	A dedicated cycle-tracking interface and cycle-phase-sensitive coaching
+	prompts---adapting workout intensity and nutritional guidance to the
+	follicular, ovulatory, luteal, and menstrual phases---are planned as
+	a significant differentiator for female users.
+	
+	\item \textbf{Clinical and user-study validation.} A structured study
+	with fitness professionals and healthcare practitioners is needed to
+	validate the accuracy of the posture detection system, the
+	appropriateness of AI coaching responses, and the usability of the
+	onboarding flow across diverse user populations.
+	
+	\item \textbf{On-device AI inference.} Deploying a quantised language
+	model on-device would allow the coaching engine to function without
+	internet connectivity, addressing the current dependency on Groq cloud
+	inference for all AI features.
+\end{enumerate}
+
+\section{Conclusion}
+
+BodyQ demonstrates that a compact academic team can deliver a technically
+ambitious, AI-integrated health application within a constrained nine-week
+timeline by combining modern cloud-native infrastructure (Supabase),
+capable open-source large language models (Llama~3.3 via Groq), and
+cross-platform mobile tooling (React Native with Expo~SDK~54). The
+resulting prototype validates the core hypothesis of the project: that
+genuine personalisation, real-time biomechanical feedback, and behavioral
+correlation analysis can coexist in a single consumer-grade fitness
+application without requiring proprietary hardware. The architecture and
+codebase established through this project provide a robust platform for
+the clinical validation, feature expansion, and community building
+identified as the next steps toward a production-ready product.
