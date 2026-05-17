@@ -16,7 +16,7 @@ The central problem BodyQ addresses can be decomposed into four distinct,
 interconnected challenges that existing solutions have consistently
 failed to resolve simultaneously.
 
-\subsection*{Lack of Genuine Personalization}
+\subsection{Lack of Genuine Personalization}
 
 Commercial fitness applications collect user data during onboarding but
 rarely use this data in a truly adaptive manner. Workout plans are drawn
@@ -27,7 +27,7 @@ sleep quality, hydration level, training load, and hormonal cycle to
 adjust its recommendations dynamically. Users are treated as instances
 of a demographic category rather than as unique individuals.
 
-\subsection*{Absence of Real-Time Exercise Feedback}
+\subsection{Absence of Real-Time Exercise Feedback}
 
 Incorrect exercise form is the leading cause of training-related injuries
 among recreational athletes. Yet no mainstream consumer fitness
@@ -37,7 +37,7 @@ an option that is expensive and logistically impractical---or on their
 own subjective perception of form, which is frequently inaccurate,
 particularly for beginners.
 
-\subsection*{Fragmented Health Data with No Correlation Layer}
+\subsection{Fragmented Health Data with No Correlation Layer}
 
 Modern users generate substantial volumes of health data across multiple
 dimensions: step counts, sleep duration, caloric intake, macronutrient
@@ -192,7 +192,7 @@ The design of BodyQ draws on research across three primary domains:
 Retrieval-Augmented Generation, computer vision for biomechanical
 analysis, and mobile health application design.
 
-\subsection*{Retrieval-Augmented Generation}
+\subsection{Retrieval-Augmented Generation}
 
 Retrieval-Augmented Generation was introduced by Lewis et al.
 \cite{lewis2020rag} as a method for grounding language model outputs in
@@ -210,7 +210,7 @@ et al. \cite{shi2023irrelevant}, who demonstrated that irrelevant context
 in RAG prompts degrades generation quality---motivating a selective,
 precise retrieval approach.
 
-\subsection*{Computer Vision for Biomechanical Analysis}
+\subsection{Computer Vision for Biomechanical Analysis}
 
 Cao et al. \cite{cao2017realtime} introduced OpenPose, a real-time
 multi-person pose estimation system that established the paradigm of
@@ -220,7 +220,7 @@ produced BlazePose, a lightweight model capable of detecting 33
 three-dimensional body landmarks at real-time frame rates on mobile
 devices---the model BodyQ employs.
 
-\subsection*{LLM-Based Health Coaching}
+\subsection{LLM-Based Health Coaching}
 
 Singhal et al. \cite{pal2023medpalm} demonstrated that appropriately
 prompted LLMs can achieve expert-level performance on medical
@@ -229,7 +229,7 @@ verified, user-specific data is essential to prevent hallucination.
 BodyQ's architecture addresses this by routing all AI coaching
 interactions through the RAG pipeline.
 
-\subsection*{Mobile Health Application Design}
+\subsection{Mobile Health Application Design}
 
 Research on user engagement with mobile health applications has
 consistently identified personalization, timely feedback, and low

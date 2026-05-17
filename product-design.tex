@@ -108,6 +108,11 @@ All Supabase calls from the dashboard use the service role key exclusively via s
 
 \section{Detailed Design}
 
+\subsection{Use Case Diagram}
+
+Figure \ref{fig:uc-bodyq} presents the use case diagram for BodyQ, illustrating the interactions between the three main actors (the User, the AI Assistant (Yara), and the Smartwatch) and the core functional capabilities of the system. The User engages directly with features such as entering consumed meals, tracking metrics, accessing the exercise library, and chatting with the AI assistant to receive personalized plans and posture correction feedback. The AI Assistant extends the chat interaction by providing voice assistance and holistic insights, and participates in generating both training and nutrition plans. The Smartwatch actor, introduced as part of the hardware integration layer, contributes use cases including heart rate monitoring, automatic workout logging, biometric data synchronization, and delivery of workout reminders to the user's wrist. Extend and include relationships are used throughout to capture optional enhancements and shared sub-behaviors, such as selecting from the food library when logging meals or updating step and calorie counts from smartwatch sensor data.
+
+
 \subsection{Sequence Diagrams}
 \textbf{SD-01: User Registration and AI-Personalized Onboarding.}
 
@@ -218,7 +223,7 @@ to the Training tab.
 		\node[activity] (init) at (8, -1.6) {Initialize Session \&\\Record Start Time};
 		\node[activity] (select) at (2, -3.5) {Search \& Select\\Exercise from Library};
 		\node[activity, below=1.2cm of select] (log) {Log Sets\\(Reps, Weight, RPE)};
-		\node[decision, below=1.2cm of log] (another) {Add another\\exercise?};
+		\node[decision, align=center,  below=1.2cm of log] (another) {Add another\\exercise?};
 		\node[activity, below=1.5cm of another] (finish) {Select "Finish Workout"};
 		\node[activity] (calc) at (8, -10.5) {Calculate Duration,\\Volume \& Calories};
 		\node[activity, below=1.2cm of calc] (save) {Persist Session to\\Supabase Database};
