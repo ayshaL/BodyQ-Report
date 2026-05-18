@@ -23,8 +23,37 @@
 \usepackage{amssymb} % This defines \checkmark
 \usepackage{xltabular}
 
+\usepackage[htt]{hyphenat}
+
 \usepackage{tikz}
-\usetikzlibrary{shapes.geometric, shapes.multipart, arrows.meta, positioning, calc, fit}
+\usetikzlibrary{shapes.geometric, shapes.multipart, arrows.meta, positioning, calc, fit, backgrounds}
+
+\tikzset{
+	sdactor/.style={
+		rectangle, draw, thick, fill=blue!10,
+		minimum width=2.1cm, minimum height=0.6cm,
+		align=center, font=\scriptsize\bfseries
+	},
+	sdlife/.style={dashed, gray!70, line width=0.5pt},
+	sdact/.style={
+		rectangle, draw, fill=blue!30, line width=0.5pt,
+		minimum width=4pt
+	},
+	sdmsg/.style={->, thick, >=Triangle, font=\scriptsize},
+	sdret/.style={->, thick, >=Triangle, dashed, font=\scriptsize},
+	sdnote/.style={
+		rectangle, draw=gray!50, fill=yellow!15,
+		font=\scriptsize, align=center, inner sep=2pt
+	},
+	sdfrag/.style={
+		rectangle, draw=gray!60, thick,
+		font=\scriptsize\bfseries, inner sep=4pt
+	},
+	sdphase/.style={
+		rectangle, draw=gray!50, fill=gray!10, thick,
+		font=\scriptsize\bfseries, inner sep=2pt
+	}
+}
 
 \usepackage{amsmath}
 \usepackage[nottoc]{tocbibind}

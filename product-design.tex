@@ -14,7 +14,7 @@ concludes with an overview of the user interface design.
 \section{High-Level Design}
 
 \subsection{Architecture Overview}
-BodyQ is structured as a four-tier distributed system consisting of a
+BodyQ is structured as a three-tier distributed system consisting of a
 mobile client, a backend-as-a-service layer, a serverless AI engine
 layer, and a web administration interface.
 
@@ -22,86 +22,84 @@ layer, and a web administration interface.
 	\centering
 	\begin{tikzpicture}[
 		node distance=1.5cm,
-		box/.style={rectangle, draw=black, thick, fill=white, minimum width=3cm, minimum height=1cm, align=center, rounded corners},
-		tier/.style={rectangle, draw=gray!50, dashed, fill=gray!5, minimum width=14.5cm, minimum height=2.2cm, anchor=west},
-		label/.style={font=\bfseries\sffamily, color=gray!80}
+		box/.style={rectangle, draw=black, thick, fill=white,
+			minimum width=2.6cm, minimum height=1cm,
+			align=center, rounded corners},
+			tier/.style={rectangle, draw=gray!50, dashed, fill=gray!5,
+				minimum width=16cm, minimum height=2.2cm, anchor=west},
+			label/.style={font=\bfseries\sffamily, color=gray!80}
 		]
 		
 		% --- TIER 1: Presentation Layer ---
 		\node[tier] (t1) at (0,0) {};
-		\node[label, right=0.2cm of t1.north west, anchor=north west] {Tier 1: Presentation Layer};
-		\node[box, fill=blue!10] (mobile) at (3.5,-1.1) {Mobile Client\\(Expo / React Native)};
-		\node[box, fill=blue!10] (admin1) at (10.5,-1.1) {Web Dashboard\\(Next.js)};
+		\node[label, right=0.2cm of t1.north west, anchor=north west]
+		{Tier 1: Presentation Layer};
+			\node[box, fill=blue!10, minimum width=3.8cm] (mobile) at (2.2,-1.1)
+			{Mobile Client\\(Expo / React Native)};
+			\node[box, fill=blue!10, minimum width=3cm] (watch) at (7,-1.1)
+			{Smartwatch\\(BLE / Health API)};
+			\node[box, fill=blue!10, minimum width=3.8cm] (admin) at (12,-1.1)
+			{Admin Dashboard\\(React 18, Next.js 14)};
 		
 		% --- TIER 2: Backend-as-a-Service ---
 		\node[tier] (t2) at (0,-3) {};
-		\node[label, right=0.2cm of t2.north west, anchor=north west] {Tier 2: Backend-as-a-Service (Supabase)};
-		\node[box, fill=green!10, minimum width=2.5cm] (auth) at (2,-4.1) {Auth};
-		\node[box, fill=green!10, minimum width=2.5cm] (api) at (5.5,-4.1) {PostgREST API};
-		\node[box, fill=green!10, minimum width=2.5cm] (storage) at (9,-4.1) {Storage};
-		\node[box, fill=green!10, minimum width=2.5cm] (edge) at (12.5,-4.1) {Edge Functions};
+		\node[label, right=0.2cm of t2.north west, anchor=north west]
+		{Tier 2: Backend-as-a-Service (Supabase)};
+			\node[box, fill=green!10, minimum width=2.5cm] (auth)    at (2,   -4.1) {Auth};
+			\node[box, fill=green!10, minimum width=2.5cm] (api)     at (5.5, -4.1) {PostgREST API};
+			\node[box, fill=green!10, minimum width=2.5cm] (storage) at (9,   -4.1) {Storage};
+			\node[box, fill=green!10, minimum width=2.5cm] (edge)    at (12.5,-4.1) {Edge Functions};
 		
-		% --- TIER 3: External Services ---
+		% --- TIER 3: External APIs & Services ---
 		\node[tier] (t3) at (0,-6) {};
-		\node[label, right=0.2cm of t3.north west, anchor=north west] {Tier 3: External APIs \& CDNs};
-		\node[box, fill=orange!10, minimum width=2.5cm] (groq) at (2,-7.1) {Groq\\(Llama-3.3)};
-		\node[box, fill=orange!10, minimum width=2.5cm] (gemini) at (5.5,-7.1) {Gemini\\Vision};
-		\node[box, fill=orange!10, minimum width=2.5cm] (off) at (9,-7.1) {Open Food\\Facts};
-		\node[box, fill=orange!10, minimum width=2.5cm] (mp) at (12.5,-7.1) {MediaPipe\\CDN};
-		
-		% --- TIER 4: Administration ---
-		\node[tier] (t4) at (0,-9) {};
-		\node[label, right=0.2cm of t4.north west, anchor=north west] {Tier 4: Administration Infrastructure};
-		\node[box, fill=purple!10, minimum width=6cm] (admin2) at (7.25,-10.1) {Admin Dashboard (React 18.0, Next.js 14)};
+		\node[label, right=0.2cm of t3.north west, anchor=north west]
+		{Tier 3: External APIs \& Services};
+			\node[box, fill=orange!10, minimum width=2.5cm] (groq)    at (1.5, -7.1)
+			{Groq\\(Llama 3.3)};
+			\node[box, fill=orange!10, minimum width=2.5cm] (gemini)  at (4.5, -7.1)
+			{Gemini\\Vision API};
+			\node[box, fill=orange!10, minimum width=2.5cm] (off)     at (7.5, -7.1)
+			{Open Food\\Facts API};
+			\node[box, fill=orange!10, minimum width=2.5cm] (whisper) at (10.5,-7.1)
+			{Whisper STT\\(OpenAI)};
+			\node[box, fill=orange!10, minimum width=2.5cm] (mp)      at (13.5,-7.1)
+			{MediaPipe\\(CDN)};
 		
 		% --- Connections ---
+		% Presentation ↔ Supabase
+		\draw[thick, <->] (mobile) -- (auth);
 		\draw[thick, <->] (mobile) -- (api);
-		\draw[thick, <->] (admin1) -- (api);
+		\draw[thick, <->] (mobile) -- (storage);
+		\draw[thick, <->] (watch) -- (mobile);
+		\draw[thick, <->] (admin)  -- (api);
+		\draw[thick, <->] (admin)  -- (auth);
+		
+		% Edge Functions → external AI services
 		\draw[thick, ->] (edge) -- (groq);
 		\draw[thick, ->] (edge) -- (gemini);
+		\draw[thick, ->] (edge) -- (whisper);
+		
+		% Mobile → client-side external services
+		\draw[thick, ->] (mobile) -- (off);
 		\draw[thick, ->] (mobile) -- (mp);
-		\draw[thick, <->] (admin2) -- (api);
 		
 	\end{tikzpicture}
-	\caption{BodyQ System Architecture: Four-Tier Layered Design}
+	\caption{BodyQ system architecture: three-tier layered design.}
 	\label{fig:architecture}
 \end{figure}
 
-\textbf{Tier~1 --- Mobile Client (React Native / Expo SDK~54).}
-The mobile application is built with React Native and Expo SDK~54 and
-targets iOS~16+ and Android~11+. It is organized using the Expo Router
-file-based navigation system. Application state is managed with Zustand
-for global stores (authentication, user profile, active workout session)
-and TanStack Query for server state and cache management. Forms are
-handled with React Hook Form and validated using Zod schema definitions.
+
+\textbf{Tier~1 --- Presentation Layer.}
+The presentation layer consists of three clients. The mobile application is built with React Native and Expo SDK~54, targeting iOS~16+ and Android~11+, organized using the Expo Router file-based navigation system. Application state is managed with Zustand for global stores (authentication, user profile, active workout session) and TanStack Query for server state and cache management. Forms are handled with React Hook Form and validated using Zod schema definitions. The smartwatch client communicates with the mobile application over Bluetooth Low Energy (BLE) and the platform Health API, syncing biometric data such as heart rate, steps, and sleep hours, which the mobile client then forwards to the backend. The administration dashboard is built with React~18.0, Next.js~14 (App Router) and Tailwind CSS; all Supabase calls from the dashboard use the service role key exclusively via server-side Route Handlers.
 
 \textbf{Tier~2 --- Backend-as-a-Service (Supabase).}
-Supabase provides the entire backend infrastructure: a managed
-PostgreSQL~15 database, an authentication service (email/password and
-Google OAuth~2.0), object storage for meal photos and profile images,
-and Edge Functions running on the Deno runtime. Row Level Security
-policies are applied to every table in the schema to enforce user data
-isolation at the database level.
+Supabase provides the entire backend infrastructure: a managed PostgreSQL~15 database, an authentication service supporting email/password and Google OAuth~2.0, object storage for meal photos and profile images, and Edge Functions running on the Deno runtime. Row Level Security policies are applied to every table in the schema to enforce user data isolation at the database level.
 
-\textbf{Tier~3 --- AI Engine Layer.}
-The AI engine is implemented as five Supabase Edge Functions:
+\textbf{Tier~3 --- External APIs \& Services.}
+The AI and data enrichment layer is implemented as Supabase Edge Functions that delegate to external providers based on task requirements and latency constraints. Conversational coaching and workout plan generation invoke either the Groq inference platform.
 
-\texttt{ai-assistant} (RAG conversational coaching)
+(\texttt{llama-3.1-8b-instant} or \texttt{llama-3.3-70b-instant}). Meal photo recognition is handled by the Google Gemini Vision API. Nutritional data lookups use the Open Food Facts API, called directly from the mobile client. Voice input is transcribed via Whisper STT, and pose estimation for AI posture correction is loaded client-side from the MediaPipe CDN.
 
-\texttt{daily-tip} (daily AI insights)
-
-\texttt{analyze-food} (meal photo recognition)
-
-\texttt{generate-workout-plan} (personalized training programs)
-
-\texttt{recommendation-engine} (rule-based recommendations).
-
-These functions invoke the Claude API (Anthropic), the Groq inference platform(\texttt{llama-3.1-8b-instant}) or (\texttt{llama-3.3-70b-instant}), or the Google Gemini Vision API
-depending on the task requirements and latency constraints.
-
-\textbf{Tier~4 --- Administration Dashboard (React 18.0, Next.js~14).}
-A web-based administration dashboard built with React 18.0, Next.js~14 (App Router) and Tailwind CSS provides operational management. 
-All Supabase calls from the dashboard use the service role key exclusively via server-side Route Handlers.
 
 % \subsection{Component Diagrams}
 % TODO: UML Component diagram
@@ -112,6 +110,12 @@ All Supabase calls from the dashboard use the service role key exclusively via s
 
 Figure \ref{fig:uc-bodyq} presents the use case diagram for BodyQ, illustrating the interactions between the three main actors (the User, the AI Assistant (Yara), and the Smartwatch) and the core functional capabilities of the system. The User engages directly with features such as entering consumed meals, tracking metrics, accessing the exercise library, and chatting with the AI assistant to receive personalized plans and posture correction feedback. The AI Assistant extends the chat interaction by providing voice assistance and holistic insights, and participates in generating both training and nutrition plans. The Smartwatch actor, introduced as part of the hardware integration layer, contributes use cases including heart rate monitoring, automatic workout logging, biometric data synchronization, and delivery of workout reminders to the user's wrist. Extend and include relationships are used throughout to capture optional enhancements and shared sub-behaviors, such as selecting from the food library when logging meals or updating step and calorie counts from smartwatch sensor data.
 
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=\textwidth]{images/use-case-bodyq.png}
+	\caption{Use Case Diagram}
+	\label{fig:uc-bodyq}
+\end{figure}
 
 \subsection{Sequence Diagrams}
 \textbf{SD-01: User Registration and AI-Personalized Onboarding.}
@@ -126,12 +130,88 @@ Figure \ref{fig:uc-bodyq} presents the use case diagram for BodyQ, illustrating 
 	\item On step~5 completion, the mobile client calls the
 	\texttt{generate-workout-plan} Edge Function with the user profile
 	JSON.
-	\item The Edge Function invokes the Claude API and receives a
+	\item The Edge Function invokes the Groq API and receives a
 	personalized 4-week workout plan as structured JSON.
 	\item The Edge Function computes BMR and TDEE; inserts records into
 	\texttt{profiles} and \texttt{calorie\_targets}.
 	\item The mobile client stores the plan and navigates to the Home tab.
 \end{enumerate}
+
+\begin{figure}[H]
+	\centering
+	\resizebox{\linewidth}{!}{%
+		\begin{tikzpicture}[x=1cm, y=1cm]
+			
+			% ── actor x positions ──
+			\def\xU{0}   % User
+			\def\xM{3}   % Mobile Client
+			\def\xA{6}   % Supabase Auth
+			\def\xD{9}   % Supabase DB
+			\def\xE{12.5}% Edge Function
+			
+			% ── lifeline total depth ──
+			\def\yBot{-12.5}
+			
+			% ── Headers ──
+			\node[sdactor] (hU) at (\xU, 0)  {User};
+			\node[sdactor] (hM) at (\xM, 0)  {Mobile Client\\(React Native)};
+			\node[sdactor] (hA) at (\xA, 0)  {Supabase\\Auth};
+			\node[sdactor] (hD) at (\xD, 0)  {Supabase DB};
+			\node[sdactor] (hE) at (\xE, 0)  {Edge Function\\generate-workout-plan};
+			
+			% ── Lifelines ──
+			\foreach \x in {\xU,\xM,\xA,\xD,\xE}
+			\draw[sdlife] (\x,-0.35) -- (\x,\yBot);
+			
+			% ── Activation bars ──
+			\draw[sdact] (\xM-0.06,-0.35) rectangle (\xM+0.06,-12.2);
+			\draw[sdact] (\xA-0.06,-1.3)  rectangle (\xA+0.06,-2.5);
+			\draw[sdact] (\xE-0.06,-5.8)  rectangle (\xE+0.06,-10.2);
+			\draw[sdact] (\xD-0.06,-8.5)  rectangle (\xD+0.06,-9.5);
+			
+			% ── Messages ──
+			% 1
+			\draw[sdmsg] (\xU,-0.9) -- node[above]{\,1. Submit registration form} (\xM,-0.9);
+			% 2
+			\draw[sdmsg] (\xM,-1.5) -- node[above]{\,2. supabase.auth.signUp()} (\xA,-1.5);
+			% 3
+			\draw[sdret] (\xA,-2.2) -- node[above]{\,3. Session JWT} (\xM,-2.2);
+			% 4
+			\draw[sdmsg] (\xM,-2.9) -- node[above]{\,4. Navigate to onboarding} (\xU,-2.9);
+			
+			% note: user completes steps
+			\node[sdnote] at (\xU+0.7,-3.7) {User completes\\5 onboarding steps};
+			
+			% 5
+			\draw[sdmsg] (\xU,-4.5) -- node[above]{\,5. Submit onboarding data} (\xM,-4.5);
+			
+			% note: buffer
+			\node[sdnote] at (\xM+0.9,-5.1) {Buffer in onboardingStore (Zustand)};
+			
+			% 6
+			\draw[sdmsg] (\xM,-5.8) -- node[above]{\,6. invoke('generate-workout-plan', \{userProfile\})} (\xE,-5.8);
+			
+			% 7 self-loop on Edge Function (Groq call)
+			\draw[sdmsg] (\xE+0.06,-6.6) to[out=0,in=0,looseness=5]
+			node[right, font=\scriptsize]{7. Groq LLaMA 3.3 → 4-week plan JSON}
+			(\xE+0.06,-7.8);
+			
+			% 8
+			\draw[sdmsg] (\xE,-8.5) -- node[above]{\,8. INSERT profiles, calorie\_targets} (\xD,-8.5);
+			% 9
+			\draw[sdret] (\xD,-9.2) -- node[above]{\,9. OK} (\xE,-9.2);
+			% 10
+			\draw[sdret] (\xE,-9.9) -- node[above]{\,10. Return plan JSON} (\xM,-9.9);
+			% 11
+			\draw[sdmsg] (\xM,-10.6) -- node[above]{\,11. Store plan; navigate to Home} (\xU,-10.6);
+			
+		\end{tikzpicture}
+	}
+	\caption{SD-01: User registration and AI-personalized onboarding sequence.}
+	\label{fig:sd-01}
+\end{figure}
+
+\newpage
 
 \textbf{SD-02: RAG Coaching Pipeline (Yara AI Assistant).}
 
@@ -139,20 +219,133 @@ Figure \ref{fig:uc-bodyq} presents the use case diagram for BodyQ, illustrating 
 	\item User types a question in the AI assistant chat screen.
 	\item Mobile client calls
 	\texttt{supabase.functions.invoke('ai-assistant')} with
-	\texttt{\{userId, query\}}.
-	\item \textbf{Retrieve:} Edge Function executes four SQL queries---7-day
-	\texttt{daily\_activity} window, 7-day \texttt{food\_logs}
-	aggregated by day, active \texttt{calorie\_targets}, and last~5
-	\texttt{workout\_sessions}.
-	\item \textbf{Augment:} Retrieved records are formatted into a
-	structured plain-text context block; out-of-range values (e.g.,
-	sleep $<6$\,h, hydration $<1500$\,mL) are flagged with warning
-	markers; four behavioral rules are appended.
-	\item \textbf{Generate:} Augmented prompt is sent to the Groq API
-	(\texttt{Llama3.3 70b}).
-	\item Edge Function inserts the response into \texttt{ai\_insights}
-	(\texttt{type='chat'}) and returns it to the mobile client.
+	\texttt{\{userId, query, voiceMode, clientContext\}}, where
+	\texttt{clientContext} carries today's snapshot (calories, macros,
+	water, sleep, meals, muscle fatigue).
+	\item \textbf{Classify:} Edge Function runs regex-based
+	\texttt{classifyQuery()} to tag the question with boolean
+	flags---\texttt{activity}, \texttt{nutrition}, \texttt{workout},
+	\texttt{body}, \texttt{history}---determining which RPCs to call.
+	\item \textbf{Retrieve:} Edge Function executes up to seven calls in
+	parallel via \texttt{Promise.all}---only the RPCs whose flag is true
+	(\texttt{get\_user\_full\_activity\_summary},
+	\texttt{get\_user\_nutrition\_summary},
+	\texttt{get\_user\_workout\_summary},
+	\texttt{get\_user\_body\_metrics\_history},
+	\texttt{get\_user\_ai\_history}) plus two that always run:
+	\texttt{get\_user\_memory} (up to 30 long-term facts) and
+	\texttt{get\_pending\_yara\_events} (unconsumed trigger events such
+	as streak milestones or hydration targets).
+	\item \textbf{Augment:} \texttt{deriveConstraintsFromMemory()} scans
+	memory facts for known patterns (injuries, diets) and expands them
+	into concrete AVOID deny-lists; \texttt{buildPrompt()} then assembles
+	thirteen ordered sections---system identity, tone profile, action
+	grammar, hard constraints, proactive signals, response rules,
+	memory-extraction instructions, user profile, long-term memory,
+	today's snapshot, 30-day summaries, coaching history, and the user
+	question.
+	\item \textbf{Generate:} Augmented prompt is sent to the Groq API 
+	\texttt{LLaMA\,3.3-70b-versatile}.
+	
+	\item \textbf{Post-process:} \texttt{extractMemoriesFromResponse()}
+	parses any \texttt{MEMORIES:[{\ldots}]} line and persists new facts
+	via \texttt{add\_user\_memory} RPC;
+	\texttt{extractActionsFromResponse()} executes a six-action
+	whitelist (\texttt{log\_water}, \texttt{log\_sleep},
+	\texttt{log\_weight}, \texttt{log\_food}, \texttt{log\_workout},
+	\texttt{forget\_fact});
+	\texttt{consumeYaraEvents()} marks surfaced events as consumed so
+	they are not repeated.
+	\item Edge Function inserts the response and returns it to the  client
 \end{enumerate}
+
+\begin{figure}[H]
+	\centering
+	\resizebox{\linewidth}{!}{%
+		\begin{tikzpicture}[x=1cm, y=1cm]
+			
+			\def\xU{0}    % User
+			\def\xM{2.8}  % Mobile Client
+			\def\xE{6.2}  % Edge Function
+			\def\xD{10}   % Supabase DB
+			\def\xG{13.5} % Groq API
+			\def\yBot{-17.5}
+			
+			% ── Headers ──
+			\node[sdactor] (hU) at (\xU,0)  {User};
+			\node[sdactor] (hM) at (\xM,0)  {Mobile Client};
+			\node[sdactor] (hE) at (\xE,0)  {Edge Function\\ai-assistant};
+			\node[sdactor] (hD) at (\xD,0)  {Supabase DB\\(RPCs)};
+			\node[sdactor] (hG) at (\xG,0)  {Groq API\\LLaMA 3.3};
+			
+			% ── Lifelines ──
+			\foreach \x in {\xU,\xM,\xE,\xD,\xG}
+			\draw[sdlife] (\x,-0.35) -- (\x,\yBot);
+			
+			% ── Activation bars ──
+			\draw[sdact] (\xM-0.06,-0.35) rectangle (\xM+0.06,-17.2);
+			\draw[sdact] (\xE-0.06,-1.5)  rectangle (\xE+0.06,-15.5);
+			\draw[sdact] (\xD-0.06,-4.2)  rectangle (\xD+0.06,-5.2);
+			\draw[sdact] (\xD-0.06,-12.5) rectangle (\xD+0.06,-14.0);
+			\draw[sdact] (\xG-0.06,-9.0)  rectangle (\xG+0.06,-10.2);
+			
+			% ── Messages ──
+			% 1
+			\draw[sdmsg] (\xU,-0.9) -- node[above]{\,1. Type question} (\xM,-0.9);
+			% 2
+			\draw[sdmsg] (\xM,-1.5) -- node[above, font=\scriptsize]
+			{\,2. invoke('ai-assistant', \{userId, query, voiceMode, clientContext\})} (\xE,-1.5);
+			
+			% CLASSIFY phase
+			\node[sdphase] at (\xE,-2.3) {CLASSIFY};
+			\draw[sdmsg] (\xE+0.06,-2.8) to[out=0,in=0,looseness=5]
+			node[right,font=\scriptsize]{3. classifyQuery() → boolean flags}
+			(\xE+0.06,-3.6);
+			
+			% RETRIEVE phase
+			\node[sdphase] at (\xE,-4.2) {RETRIEVE};
+			\draw[sdmsg] (\xE,-4.7) -- node[above,font=\scriptsize]
+			{\,4. Promise.all([flagged RPCs + get\_user\_memory + get\_pending\_yara\_events])} (\xD,-4.7);
+			\draw[sdret] (\xD,-5.4) -- node[above,font=\scriptsize]{\,4. Aggregated user context} (\xE,-5.4);
+			
+			% AUGMENT phase
+			\node[sdphase] at (\xE,-6.2) {AUGMENT};
+			\draw[sdmsg] (\xE+0.06,-6.8) to[out=0,in=0,looseness=5]
+			node[right,font=\scriptsize,align=left]{5. deriveConstraintsFromMemory()\\buildPrompt() → 13-section prompt}
+			(\xE+0.06,-8.0);
+			
+			% GENERATE phase
+			\node[sdphase] at (\xE,-8.8) {GENERATE};
+			\draw[sdmsg] (\xE,-9.3) -- node[above,font=\scriptsize]
+			{\,6. Chat completion (augmented prompt)} (\xG,-9.3);
+			\draw[sdret] (\xG,-10.0) -- node[above,font=\scriptsize]{\,6. Generated response} (\xE,-10.0);
+			
+			% POST-PROCESS phase
+			\node[sdphase] at (\xE,-10.8) {POST-PROCESS};
+			\draw[sdmsg] (\xE+0.06,-11.4) to[out=0,in=0,looseness=5]
+			node[right,font=\scriptsize,align=left]{7. extractMemoriesFromResponse()\\extractActionsFromResponse()\\consumeYaraEvents()}
+			(\xE+0.06,-13.0);
+			
+			% 8
+			\draw[sdmsg] (\xE,-13.5) -- node[above,font=\scriptsize]
+			{\,8. add\_user\_memory + action RPCs} (\xD,-13.5);
+			\draw[sdret] (\xD,-14.0) -- node[above,font=\scriptsize]{\,8. OK} (\xE,-14.0);
+			
+			% 9
+			\draw[sdmsg] (\xE,-14.6) -- node[above,font=\scriptsize]
+			{\,9. INSERT ai\_conversation record} (\xD,-14.6);
+			
+			% 10
+			\draw[sdret] (\xE,-15.3) -- node[above,font=\scriptsize]
+			{\,10. Return response to client} (\xM,-15.3);
+			% 11
+			\draw[sdmsg] (\xM,-16.0) -- node[above,font=\scriptsize]{\,11. Render Yara reply} (\xU,-16.0);
+			
+		\end{tikzpicture}
+	}
+	\caption{SD-02: RAG coaching pipeline --- Yara AI assistant sequence.}
+	\label{fig:sd-02}
+\end{figure}
 
 \textbf{SD-03: Posture Detection During Workout.}
 
@@ -172,6 +365,75 @@ Figure \ref{fig:uc-bodyq} presents the use case diagram for BodyQ, illustrating 
 	\item Score, feedback strings, and rep count are rendered on the
 	overlay UI in real time.
 \end{enumerate}
+
+\begin{figure}[H]
+	\centering
+	\resizebox{\linewidth}{!}{%
+		\begin{tikzpicture}[x=1cm, y=1cm]
+			
+			\def\xU{0}    % User
+			\def\xM{3}    % Mobile Client
+			\def\xW{6.5}  % WebView
+			\def\xP{10}   % MediaPipe
+			\def\xE{13.5} % PostureEngine
+			\def\yBot{-12.0}
+			
+			% ── Headers ──
+			\node[sdactor] at (\xU,0) {User};
+			\node[sdactor] at (\xM,0) {Mobile Client\\(React Native)};
+			\node[sdactor] at (\xW,0) {WebView\\(HTML/JS)};
+			\node[sdactor] at (\xP,0) {MediaPipe\\Pose (CDN)};
+			\node[sdactor] at (\xE,0) {PostureEngine\\(RN)};
+			
+			% ── Lifelines ──
+			\foreach \x in {\xU,\xM,\xW,\xP,\xE}
+			\draw[sdlife] (\x,-0.35) -- (\x,\yBot);
+			
+			% ── Activation bars ──
+			\draw[sdact] (\xM-0.06,-0.35) rectangle (\xM+0.06,-11.7);
+			\draw[sdact] (\xW-0.06,-1.5)  rectangle (\xW+0.06,-8.8);
+			\draw[sdact] (\xP-0.06,-2.3)  rectangle (\xP+0.06,-7.5);
+			\draw[sdact] (\xE-0.06,-7.5)  rectangle (\xE+0.06,-10.2);
+			
+			% ── Messages ──
+			% 1
+			\draw[sdmsg] (\xU,-0.9) -- node[above]{\,1. Tap ``PostureAI''} (\xM,-0.9);
+			% 2
+			\draw[sdmsg] (\xM,-1.5) -- node[above]{\,2. Render PostureScreen + mount WebView} (\xW,-1.5);
+			% 3
+			\draw[sdmsg] (\xW,-2.3) -- node[above]{\,3. Load MediaPipe Pose JS from CDN} (\xP,-2.3);
+			\draw[sdret] (\xP,-3.0) -- node[above]{\,3. Model ready} (\xW,-3.0);
+			% 4
+			\draw[sdmsg] (\xW,-3.7) -- node[above]{\,4. getUserMedia() → camera stream} (\xP,-3.7);
+			
+			% loop frame
+			\node[sdnote] at (8.25,-4.5) {loop: each video frame};
+			
+			% 5 self-loop on MediaPipe
+			\draw[sdmsg] (\xP+0.06,-5.0) to[out=0,in=0,looseness=5]
+			node[right,font=\scriptsize]{5. Landmark detection (33 points)}
+			(\xP+0.06,-6.0);
+			
+			% 6
+			\draw[sdmsg] (\xP,-6.7) -- node[above]{\,6. postMessage(landmarks JSON)} (\xW,-6.7);
+			% 7
+			\draw[sdmsg] (\xW,-7.5) -- node[above]{\,7. onMessage → landmarks array} (\xE,-7.5);
+			
+			% 8 self-loop on PostureEngine
+			\draw[sdmsg] (\xE+0.06,-8.2) to[out=0,in=0,looseness=5]
+			node[right,font=\scriptsize,align=left]{8. analyzeSquat():\\compute joint angles,\\evaluate ranges, track reps}
+			(\xE+0.06,-9.8);
+			
+			% 9
+			\draw[sdret] (\xE,-10.2) -- node[above]{\,9. \{score, feedback, repCount\}} (\xM,-10.2);
+			% 10
+			\draw[sdmsg] (\xM,-10.9) -- node[above]{\,10. Render overlay UI (real-time)} (\xU,-10.9);
+			
+		\end{tikzpicture}
+	}
+	\caption{SD-03: Posture detection during workout session sequence.}
+	\label{fig:sd-03}
+\end{figure}
 
 \subsection{Activity Diagrams}
 % TODO: Workout session flow, onboarding 
@@ -255,116 +517,85 @@ After registration, Supabase Auth fires a database trigger that
 inserts a skeleton row into \texttt{profiles}. The mobile client
 detects the empty profile and redirects to the first onboarding
 screen. The user progresses through five data-collection steps:
-personal data (age, sex), body measurements (height, current weight),
-fitness goal selection (weight loss, muscle gain, or maintenance),
-activity level, and training experience level. Each step validates
-its inputs locally; the user cannot advance until all required fields
-are complete.
+personal data (age, sex), body measurements (height, current weight), fitness goal selection (weight loss, muscle gain, or maintenance), activity level, and training experience level. Each step validates its inputs locally; the user cannot advance until all required fields are complete.
 
 On completion of step~5 the system forks into two concurrent
 branches. The first branch calls \texttt{macroCalc.calculateTDEE()}
-with the collected profile data, computes the Basal Metabolic Rate
-using the Mifflin-St\,Jeor equation, and writes the resulting calorie
-and macro targets to \texttt{profiles} and \texttt{calorie\_targets}.
-The second branch invokes the \texttt{generate-workout-plan} Edge
-Function, which calls the Claude API and stores the returned
-four-week training programme as a JSONB document in
-\texttt{profiles.workout\_plan}. Both branches must complete before
-the flow joins and navigates the user to the Home tab for the first
-time.
+with the collected profile data, computes the Basal Metabolic Rate using the Mifflin-St\,Jeor equation, and writes the resulting calorie and macro targets to \texttt{profiles} and \texttt{calorie\_targets}.
+The second branch invokes the \texttt{generate-workout-plan} Edge Function, which calls the Groq API and stores the returned four-week training programme as a JSONB document in \texttt{profiles.workout\_plan}. Both branches must complete before the flow joins and navigates the user to the Home tab for the first time.
 
-If the user declines to enable cycle tracking during onboarding the
-\texttt{cycle\_tracking\_enabled} flag is set to \texttt{false} and
-the cycle-phase recommendation logic is bypassed throughout the
-application.
+If the user declines to enable cycle tracking during onboarding the \texttt{cycle\_tracking\_enabled} flag is set to \texttt{false} and the cycle-phase recommendation logic is bypassed throughout the application.
 
 \begin{figure}[H]
 	\centering
-	% Resizebox ensures it fits the page width perfectly
-	\resizebox{\textwidth}{!}{
+	\resizebox{0.55\textwidth}{!}{
 		\begin{tikzpicture}[
-			node distance=1.8cm, % Increased distance to prevent overlap
 			auto,
-			% Styles
-			startstop/.style={draw, circle, fill=black, minimum size=10pt, inner sep=0pt},
-			endstop/.style={draw, double, circle, fill=black, minimum size=10pt, inner sep=2pt},
-			activity/.style={rectangle, draw, thick, rounded corners, fill=white, minimum width=3.5cm, minimum height=1cm, align=center, font=\small},
-			decision/.style={diamond, draw, thick, fill=white, aspect=1.5, minimum width=1.8cm, font=\scriptsize},
-			sync/.style={rectangle, fill=black, minimum width=7cm, minimum height=3pt, inner sep=0pt},
-			line/.style={draw, thick, -{Stealth[scale=1.2]}},
+			startstop/.style={draw, circle, fill=black, minimum size=6pt, inner sep=0pt},
+			endstop/.style={draw, double, circle, fill=black, minimum size=6pt, inner sep=1pt},
+			activity/.style={rectangle, draw, thick, rounded corners, fill=white,
+				minimum width=2.6cm, minimum height=0.65cm,
+				align=center, font=\scriptsize},
+			decision/.style={diamond, draw, thick, fill=white, aspect=1.4,
+				minimum width=1cm, font=\scriptsize, align=center},
+			sync/.style={rectangle, fill=black, minimum width=4.5cm,
+				minimum height=2.5pt, inner sep=0pt},
+			line/.style={draw, thick, -{Stealth[scale=0.9]}},
 			swimlane/.style={draw, gray!30, line width=0.5pt}
 			]
 			
 			% --- SWIMLANES ---
-			% Vertical lines
-			\draw[swimlane] (-1, 1) -- (-1, -18);
-			\draw[swimlane] (5, 1) -- (5, -18);
-			\draw[swimlane] (12, 1) -- (12, -18);
+			\draw[swimlane] (-0.7, 0.5) -- (-0.7, -13.5);
+			\draw[swimlane] (3.8,  0.5) -- (3.8,  -13.5);
+			\draw[swimlane] (10.0, 0.5) -- (10.0, -13.5);
 			
-			% Headers
-			\node[font=\Large\bfseries] at (2, 0.5) {User};
-			\node[font=\Large\bfseries] at (8.5, 0.5) {System};
+			\node[font=\small\bfseries] at (1.5, 0.28) {User};
+			\node[font=\small\bfseries] at (6.9, 0.28) {System};
 			
-			% --- USER LANE NODES ---
-			\node[startstop] (start) at (2, 0) {};
+			% --- USER LANE ---
+			\node[startstop] (start)     at (1.5,  0)    {};
+			\node[activity,  below=0.35cm of start]    (step1)    {Step 1: Basic Info\\(Age, Sex, Height)};
+			\node[decision,  below=0.35cm of step1]    (dec1)     {Valid?};
+			\node[activity,  below=0.4cm  of dec1]     (step2to4) {Steps 2--4: Metrics\\(Weight, Goal, Activity)};
+			\node[decision,  below=0.35cm of step2to4] (dec2)     {Valid?};
+			\node[activity,  below=0.4cm  of dec2]     (step5)    {Step 5: Experience\\(Training Level)};
+			\node[decision,  below=0.35cm of step5]    (dec3)     {Valid?};
 			
-			\node[activity, below=0.8cm of start] (step1) {Step 1: Basic Info\\(Age, Sex, Height)};
-			\node[decision, below=0.8cm of step1] (dec1) {Valid?};
+			% --- SYSTEM LANE ---
+			\node[sync] (fork) at (6.9, -8.6) {};
 			
-			\node[activity, below=1.2cm of dec1] (step2to4) {Steps 2--4: Metrics\\(Weight, Goal, Activity)};
-			\node[decision, below=0.8cm of step2to4] (dec2) {Valid?};
+			\node[activity] (calc)   at (5.2,  -9.6)  {Calculate BMR/TDEE\\(Mifflin-St Jeor)};
+			\node[activity] (writeA) at (5.2,  -10.7) {Write to \texttt{profiles} \&\\\texttt{calorie\_targets}};
+			\node[activity] (edge)   at (8.6,  -9.6)  {Invoke Edge Function\\(Groq API)};
+			\node[activity] (writeB) at (8.6,  -10.7) {Write to \texttt{workout\_plan}};
 			
-			\node[activity, below=1.2cm of dec2] (step5) {Step 5: Experience\\(Training Level)};
-			\node[decision, below=0.8cm of step5] (dec3) {Valid?};
+			\node[sync] (join) at (6.9, -11.8) {};
 			
-			% --- SYSTEM LANE NODES ---
-			% Fork bar
-			\node[sync] (fork) at (8.5, -9.5) {};
-			
-			% Branch A (Left side of System lane)
-			\node[activity, below=1.5cm of fork, xshift=-2cm] (calc) {Calculate BMR/TDEE\\(Mifflin-St Jeor)};
-			\node[activity, below=1.2cm of calc] (writeA) {Write to \texttt{profiles} \&\\\texttt{calorie\_targets}};
-			
-			% Branch B (Right side of System lane)
-			\node[activity, below=1.5cm of fork, xshift=2cm] (edge) {Invoke Edge Function\\(Claude API)};
-			\node[activity, below=1.2cm of edge] (writeB) {Write to\\\texttt{workout\_plan}};
-			
-			% Join bar
-			\node[sync] (join) at (8.5, -15) {};
-			
-			% Final Navigation
-			\node[activity, below=1cm of join] (home) {Navigate to Home Dashboard};
-			\node[endstop, below=0.8cm of home] (end) {};
+			\node[activity, below=0.35cm of join] (home) {Navigate to Home Dashboard};
+			\node[endstop,  below=0.35cm of home] (end)  {};
 			
 			% --- CONNECTIONS ---
-			
-			% Main Flow (User)
-			\draw[line] (start) -- (step1);
-			\draw[line] (step1) -- (dec1);
-			\draw[line] (dec1) -- node[right] {Yes} (step2to4);
+			\draw[line] (start)    -- (step1);
+			\draw[line] (step1)    -- (dec1);
+			\draw[line] (dec1)     -- node[right, font=\scriptsize]{Yes} (step2to4);
 			\draw[line] (step2to4) -- (dec2);
-			\draw[line] (dec2) -- node[right] {Yes} (step5);
-			\draw[line] (step5) -- (dec3);
+			\draw[line] (dec2)     -- node[right, font=\scriptsize]{Yes} (step5);
+			\draw[line] (step5)    -- (dec3);
 			
-			% Validation Loops (No paths) - Routed to the left to avoid clutter
-			\draw[line] (dec1.west) -- ++(-0.8,0) |- node[left, pos=0.2] {No} (step1.west);
-			\draw[line] (dec2.west) -- ++(-0.8,0) |- node[left, pos=0.2] {No} (step2to4.west);
-			\draw[line] (dec3.west) -- ++(-0.8,0) |- node[left, pos=0.2] {No} (step5.west);
+			\draw[line] (dec1.west)     -- ++(-0.4,0) |- node[left, pos=0.25, font=\scriptsize]{No} (step1.west);
+			\draw[line] (dec2.west)     -- ++(-0.4,0) |- node[left, pos=0.25, font=\scriptsize]{No} (step2to4.west);
+			\draw[line] (dec3.west)     -- ++(-0.4,0) |- node[left, pos=0.25, font=\scriptsize]{No} (step5.west);
 			
-			% Transition to System
-			\draw[line] (dec3.east) -- node[above, pos=0.2] {Yes} (fork.west);
+			\draw[line] (dec3.east) -- node[above, font=\scriptsize]{Yes} (fork.west);
 			
-			% Parallel Processing
-			\draw[line] (fork.south -| calc) -- (calc.north);
-			\draw[line] (fork.south -| edge) -- (edge.north);
-			\draw[line] (calc) -- (writeA);
-			\draw[line] (edge) -- (writeB);
+			\draw[line] (fork.south -| calc)  -- (calc.north);
+			\draw[line] (fork.south -| edge)  -- (edge.north);
+			\draw[line] (calc)   -- (writeA);
+			\draw[line] (edge)   -- (writeB);
 			
-			% Join
 			\draw[line] (writeA.south) -- (join.north -| writeA.south);
 			\draw[line] (writeB.south) -- (join.north -| writeB.south);
 			
-			% Final
 			\draw[line] (join) -- (home);
 			\draw[line] (home) -- (end);
 			
@@ -373,6 +604,8 @@ application.
 	\caption{AD-02: User onboarding activity diagram with parallel system logic.}
 	\label{fig:ad-onboarding}
 \end{figure}
+
+\newpage
 
 \subsection{Class Diagram}
 % TODO: Based on DB schema
@@ -392,39 +625,38 @@ carbohydrates, fat, and water), and the AI-generated workout plan
 encoded as a JSONB document.
 
 \textbf{FoodLog} records a single food item consumed by the user,
-capturing food name, macro values, meal type, and timestamp. Many
-\texttt{FoodLog} instances belong to one \texttt{UserProfile}.
+capturing food name, macro values, meal type, and timestamp.
 \textbf{CalorieTarget} stores a date-stamped snapshot of the user's
 macro targets, enabling the correlation engine to join targets to
-activity records by date without referencing the mutable profile
-row.
+activity records by date without referencing the mutable profile row.
 
-\textbf{WorkoutSession} records a completed training session. It
-holds session metadata (start time, end time, duration) and
+\textbf{WorkoutSession} records a completed training session and
 aggregates its exercises via a composition relationship with
 \textbf{ExerciseEntry}, which in turn composes one or more
-\textbf{SetRecord} value objects. The \texttt{exercises} column in
-the database is a JSONB array that serialises this nested structure
-as a single column.
+\textbf{SetRecord} value objects.
 
 \textbf{DailyActivity} is the central fact table for the correlation
-engine. It stores one row per user per day, recording steps, water
-intake, sleep hours, and the current menstrual cycle phase for
-eligible users. \textbf{CycleLog} tracks individual phase
-transitions for users who have enabled cycle tracking.
+engine, storing one row per user per day for steps, water intake,
+sleep hours, and cycle phase. \textbf{CycleLog} tracks individual
+phase transitions for users who have enabled cycle tracking.
 
 \textbf{AIInsight} persists every coaching response and daily tip
 generated by the Yara assistant or the \texttt{daily-tip} Edge
-Function, allowing historical insights to be replayed in the chat
-interface.
+Function.
 
-The \textbf{PostureEngine} module (shown as a utility class) is
-stateless; it accepts a landmark array and an exercise identifier and
-returns a \texttt{PostureResult} value object. The
-\textbf{MacroCalc} utility is a pure-function module with no database
-dependencies; its three public methods implement the
-Mifflin-St\,Jeor BMR formula, the TDEE multiplier, and the
-goal-adjusted macro split.
+The community layer is modelled by four classes. \textbf{Post}
+represents a public feed entry which may receive zero or more
+\textbf{Comment} entries. \textbf{Conversation} groups two
+participants into a direct-message thread containing zero or more
+\textbf{DirectMessage} records. \textbf{Friendship} models the
+bidirectional social graph between users, tracking pending, accepted,
+and blocked states.
+
+The \textbf{PostureEngine} module is stateless; it accepts a landmark
+array and an exercise identifier and returns a
+\texttt{PostureResult} value object. The \textbf{MacroCalc} utility
+implements the Mifflin-St\,Jeor BMR formula, the TDEE multiplier, and
+the goal-adjusted macro split.
 
 \begin{figure}[H]
 	\centering
@@ -432,59 +664,72 @@ goal-adjusted macro split.
 		\begin{tikzpicture}[
 			node distance=1.5cm,
 			>=Stealth,
-			% Class Box Style
 			class/.style={
-				draw, rectangle split, rectangle split parts=2, 
-				fill=white, thick, anchor=center, text width=4.5cm, font=\footnotesize
+				draw, rectangle split, rectangle split parts=2,
+				fill=white, thick, anchor=center, text width=4.5cm,
+				font=\footnotesize
 			},
-			% Utility Style (3 parts for methods)
 			utility/.style={
-				draw, rectangle split, rectangle split parts=3, 
-				fill=gray!5, thick, anchor=center, text width=5.5cm, font=\footnotesize
+				draw, rectangle split, rectangle split parts=3,
+				fill=gray!5, thick, anchor=center, text width=5.5cm,
+				font=\footnotesize
 			},
-			% Association Styles
 			oneToMany/.style={draw, thick, {Straight Barb[reversed]}-},
 			composition/.style={draw, thick, {Diamond[fill=black]}-},
 			dependency/.style={draw, thick, dashed, ->}
 			]
 			
-			% --- CENTRAL CLASS ---
-			\node[class, text width=5cm] (UserProfile) {
+			% ── CENTRAL CLASS ──────────────────────────────────────────────
+			\node[class, text width=5cm] (UserProfile) at (0,0) {
 				\textbf{UserProfile}
 				\nodepart{second}
-				id : UUID \\ fullName : String \\ age : Int \\ sex : String \\ weightKg : Float \\ heightCm : Float \\ goal : String \\ activityLevel : String \\ experienceLevel : String \\ calorieTarget : Int \\ proteinTarget : Int \\ carbsTarget : Int \\ fatTarget : Int \\ waterTargetMl : Int \\ cycleTrackingEnabled : Bool \\ workoutPlan : JSON
+				id : UUID \\ fullName : String \\ age : Int \\ sex : String \\
+				weightKg : Float \\ heightCm : Float \\ goal : String \\
+				activityLevel : String \\ experienceLevel : String \\
+				calorieTarget : Int \\ proteinTarget : Int \\
+				carbsTarget : Int \\ fatTarget : Int \\
+				waterTargetMl : Int \\ cycleTrackingEnabled : Bool \\
+				workoutPlan : JSON
 			};
 			
-			% --- LEFT COLUMN: Nutrition & Tracking ---
+			% ── LEFT COLUMN: Nutrition & Tracking ──────────────────────────
 			\node[class, left=3cm of UserProfile, yshift=4cm] (FoodLog) {
 				\textbf{FoodLog}
 				\nodepart{second}
-				id : UUID \\ userId : UUID \\ foodName : String \\ calories : Int \\ protein : Int \\ carbs : Int \\ fat : Int \\ mealType : String \\ loggedAt : DateTime
+				id : UUID \\ userId : UUID \\ foodName : String \\
+				calories : Int \\ protein : Int \\ carbs : Int \\
+				fat : Int \\ mealType : String \\ loggedAt : DateTime
 			};
 			
 			\node[class, left=3cm of UserProfile, yshift=0cm] (CalorieTarget) {
 				\textbf{CalorieTarget}
 				\nodepart{second}
-				id : UUID \\ userId : UUID \\ date : Date \\ calorieTarget : Int \\ proteinTarget : Int \\ carbsTarget : Int \\ fatTarget : Int
+				id : UUID \\ userId : UUID \\ date : Date \\
+				calorieTarget : Int \\ proteinTarget : Int \\
+				carbsTarget : Int \\ fatTarget : Int
 			};
 			
 			\node[class, left=3cm of UserProfile, yshift=-4cm] (DailyActivity) {
 				\textbf{DailyActivity}
 				\nodepart{second}
-				userId : UUID \\ date : Date \\ steps : Int \\ waterMl : Int \\ sleepHours : Float \\ cyclePhase : String
+				userId : UUID \\ date : Date \\ steps : Int \\
+				waterMl : Int \\ sleepHours : Float \\ cyclePhase : String
 			};
 			
-			\node[class, left=5.5cm of DailyActivity, yshift=0cm] (CycleLog) {
+			\node[class, left=5.5cm of DailyActivity] (CycleLog) {
 				\textbf{CycleLog}
 				\nodepart{second}
-				id : UUID \\ userId : UUID \\ phase : String \\ loggedDate : Date
+				id : UUID \\ userId : UUID \\ phase : String \\
+				loggedDate : Date
 			};
 			
-			% --- RIGHT COLUMN: Workouts ---
+			% ── RIGHT COLUMN: Workouts ─────────────────────────────────────
 			\node[class, right=3cm of UserProfile, yshift=2cm] (WorkoutSession) {
 				\textbf{WorkoutSession}
 				\nodepart{second}
-				id : UUID \\ userId : UUID \\ name : String \\ startedAt : DateTime \\ endedAt : DateTime \\ durationMinutes : Int
+				id : UUID \\ userId : UUID \\ name : String \\
+				startedAt : DateTime \\ endedAt : DateTime \\
+				durationMinutes : Int
 			};
 			
 			\node[class, below=1.5cm of WorkoutSession] (ExerciseEntry) {
@@ -499,49 +744,118 @@ goal-adjusted macro split.
 				reps : Int \\ weightKg : Float
 			};
 			
-			% --- BOTTOM: AI & Insights ---
+			% ── BOTTOM CENTRE: AI & Insights ───────────────────────────────
 			\node[class, below=3cm of UserProfile] (AIInsight) {
 				\textbf{AIInsight}
 				\nodepart{second}
-				id : UUID \\ userId : UUID \\ content : Text \\ type : [tip|chat] \\ tone : String \\ createdAt : DateTime
+				id : UUID \\ userId : UUID \\ content : Text \\
+				type : [tip|chat] \\ tone : String \\ createdAt : DateTime
 			};
 			
-			% --- UTILITIES (Top and Far Right) ---
+			% ── BOTTOM LEFT: Community ─────────────────────────────────────
+			\node[class, left=3cm of AIInsight, yshift=-3cm] (Post) {
+				\textbf{Post}
+				\nodepart{second}
+				id : UUID \\ authorId : UUID \\ content : Text \\
+				imageUrl : String \\ likesCount : Int \\ createdAt : DateTime
+			};
+			
+			\node[class, below=1.5cm of Post] (Comment) {
+				\textbf{Comment}
+				\nodepart{second}
+				id : UUID \\ postId : UUID \\ authorId : UUID \\
+				content : Text \\ createdAt : DateTime
+			};
+			
+			\node[class, below=1.5cm of Comment] (Friendship) {
+				\textbf{Friendship}
+				\nodepart{second}
+				id : UUID \\ requesterId : UUID \\ addresseeId : UUID \\
+				status : [pending|accepted|blocked] \\ createdAt : DateTime
+			};
+			
+			% ── BOTTOM RIGHT: Messaging ────────────────────────────────────
+			\node[class, right=3cm of AIInsight, yshift=-3cm] (Conversation) {
+				\textbf{Conversation}
+				\nodepart{second}
+				id : UUID \\ participantA : UUID \\ participantB : UUID \\
+				createdAt : DateTime
+			};
+			
+			\node[class, below=1.5cm of Conversation] (DirectMessage) {
+				\textbf{DirectMessage}
+				\nodepart{second}
+				id : UUID \\ conversationId : UUID \\ senderId : UUID \\
+				content : Text \\ sentAt : DateTime
+			};
+			
+			% ── UTILITIES ──────────────────────────────────────────────────
 			\node[utility, above=2cm of UserProfile] (MacroCalc) {
 				\textbf{\guillemotleft utility\guillemotright \\ MacroCalc}
 				\nodepart{second}
 				\nodepart{third}
-				+ calculateBMR(profile) \\ + calculateTDEE(bmr, activity) \\ + calculateMacros(tdee, goal)
+				+ calculateBMR(profile) \\
+				+ calculateTDEE(bmr, activity) \\
+				+ calculateMacros(tdee, goal)
 			};
 			
 			\node[utility, right=1.5cm of WorkoutSession, xshift=1cm] (PostureEngine) {
 				\textbf{\guillemotleft utility\guillemotright \\ PostureEngine}
 				\nodepart{second}
 				\nodepart{third}
-				+ analyseFrame(landmarks, ex) \\ - computeAngle(a, b, c) \\ - evaluateForm(angles, ex) \\ - detectRepCycle(angle, hist)
+				+ analyseFrame(landmarks, ex) \\
+				- computeAngle(a, b, c) \\
+				- evaluateForm(angles, ex) \\
+				- detectRepCycle(angle, hist)
 			};
 			
-			% --- ASSOCIATIONS ---
+			% ── ASSOCIATIONS ───────────────────────────────────────────────
 			
-			% UserProfile 1 -- *
-			\draw[oneToMany] (UserProfile.west) -- ++(-1,0) |- (FoodLog.east) node[pos=0.9, above] {*};
-			\draw[oneToMany] (UserProfile.west) -- (CalorieTarget.east) node[pos=0.9, above] {*};
-			\draw[oneToMany] (UserProfile.west) -- ++(-1,0) |- (DailyActivity.east) node[pos=0.9, above] {*};
-			\draw[oneToMany] (DailyActivity.west) -- (CycleLog.east) node[pos=0.9, above] {*};
-			\draw[oneToMany] (UserProfile.east) -- (WorkoutSession.west) node[pos=0.9, above] {*};
-			\draw[oneToMany] (UserProfile.south) -- (AIInsight.north) node[pos=0.9, right] {*};
+			% UserProfile → Nutrition & Tracking
+			\draw[oneToMany] (UserProfile.west) -- ++(-1,0) |- (FoodLog.east)
+			node[pos=0.9, above] {*};
+			\draw[oneToMany] (UserProfile.west) -- (CalorieTarget.east)
+			node[pos=0.9, above] {*};
+			\draw[oneToMany] (UserProfile.west) -- ++(-1,0) |- (DailyActivity.east)
+			node[pos=0.9, above] {*};
+			\draw[oneToMany] (DailyActivity.west) -- (CycleLog.east)
+			node[pos=0.9, above] {*};
 			
-			% Composition (Workout Hierarchy)
-			\draw[composition] (WorkoutSession.south) -- (ExerciseEntry.north) node[pos=0.1, right] {1} node[pos=0.9, right] {*};
-			\draw[composition] (ExerciseEntry.south) -- (SetRecord.north) node[pos=0.1, right] {1} node[pos=0.9, right] {*};
+			% UserProfile → Workouts & AI
+			\draw[oneToMany] (UserProfile.east) -- (WorkoutSession.west)
+			node[pos=0.9, above] {*};
+			\draw[oneToMany] (UserProfile.south) -- (AIInsight.north)
+			node[pos=0.9, right] {*};
 			
-			% Dependencies
-			\draw[dependency] (MacroCalc.south) -- (UserProfile.north) node[midway, right] {computes targets};
-			\draw[dependency] (PostureEngine.west) -- (WorkoutSession.east) node[midway, above] {contributes data};
+			% Workout composition
+			\draw[composition] (WorkoutSession.south) -- (ExerciseEntry.north)
+			node[pos=0.1, right] {1} node[pos=0.9, right] {*};
+			\draw[composition] (ExerciseEntry.south) -- (SetRecord.north)
+			node[pos=0.1, right] {1} node[pos=0.9, right] {*};
 			
-			% Multiplicity 1s
+			% UserProfile → Community
+			\draw[oneToMany] (UserProfile.south) -- ++(0,-1) -| (Post.north)
+			node[pos=0.9, right] {*};
+			\draw[composition] (Post.south) -- (Comment.north)
+			node[pos=0.1, right] {1} node[pos=0.9, right] {*};
+			\draw[oneToMany] (UserProfile.south) -- ++(0,-1) -| (Friendship.north)
+			node[pos=0.9, right] {*};
+			
+			% UserProfile → Messaging
+			\draw[oneToMany] (UserProfile.south) -- ++(0,-1) -| (Conversation.north)
+			node[pos=0.9, right] {*};
+			\draw[composition] (Conversation.south) -- (DirectMessage.north)
+			node[pos=0.1, right] {1} node[pos=0.9, right] {*};
+			
+			% Utilities
+			\draw[dependency] (MacroCalc.south) -- (UserProfile.north)
+			node[midway, right] {computes targets};
+			\draw[dependency] (PostureEngine.west) -- (WorkoutSession.east)
+			node[midway, above] {contributes data};
+			
+			% Multiplicity 1s on UserProfile
 			\node[above right=0.1cm of UserProfile.west, font=\scriptsize] {1};
-			\node[above left=0.1cm of UserProfile.east, font=\scriptsize] {1};
+			\node[above left=0.1cm  of UserProfile.east, font=\scriptsize] {1};
 			\node[below right=0.1cm of UserProfile.south, font=\scriptsize] {1};
 			
 		\end{tikzpicture}
@@ -549,7 +863,6 @@ goal-adjusted macro split.
 	\caption{BodyQ domain model class diagram.}
 	\label{fig:class}
 \end{figure}
-
 
 \section{UI Design}
 % TODO: Wireframes / mockups
@@ -589,9 +902,24 @@ so that advice is never generic.
 
 \subsection{Navigation Structure}
 
-The application uses a five-tab bottom navigation bar, implemented
-with Expo Router's tab layout. Table~\ref{tab:navigation} summarises
-each tab, its primary screen component, and its key child screens.
+The application uses a root stack navigator that conditionally renders
+one of three navigation contexts based on authentication and profile
+state, with a five-tab bottom navigation bar for authenticated users,
+implemented with Expo Router's tab layout.
+
+\paragraph{Unauthenticated context.}
+Users who are not signed in are presented with two screens:
+\texttt{SignIn} and \texttt{SignUp}.
+
+\paragraph{New-user context (\texttt{isNewUser = true}).}
+First-time users are routed through the onboarding flow:
+\texttt{OnBoardingGoal} $\to$ \texttt{OnboardingBody} $\to$
+\texttt{OnboardingDone}.
+
+\paragraph{Authenticated context.}
+Returning users land in \texttt{MainApp} with five tabs.
+Table~\ref{tab:navigation} summarises each tab, its primary screen
+component, and its key child screens.
 
 \begin{table}[H]
 	\centering
@@ -601,73 +929,54 @@ each tab, its primary screen component, and its key child screens.
 		\toprule
 		\textbf{Tab} & \textbf{Root Screen} & \textbf{Child Screens / Overlays} \\
 		\midrule
-		Home      & \texttt{Home.js}       & Daily AI tip card, macro detail modal \\
-		Nutrition & \texttt{Nutrition.js}  & \texttt{MealLogger.js}, \texttt{FoodScannerScreen.js},
+		Home      & \texttt{Home.js}
+		& Daily AI tip card, macro detail modal \\
+		Fuel      & \texttt{Nutrition.js}
+		& \texttt{MealLogger.js}, \texttt{FoodDetail},
+		\texttt{FoodScannerScreen.js},
+		\texttt{CustomMealBuilder},
 		\texttt{FoodResultSheet} (bottom sheet) \\
-		Training  & \texttt{Training.js}   & \texttt{WorkoutActive.js},
-		\texttt{WorkoutSummary.js},
-		\texttt{PostureAI.js} (overlay) \\
-		Insights  & \texttt{Insights.js}   & Correlation cards, weekly charts \\
-		Profile   & \texttt{Profile.js}    & \texttt{SleepLog.js},
-		\texttt{YaraAssistant.js} (chat),
-		cycle log, streak history \\
+		Train     & \texttt{TrainingHub.js}
+		& \texttt{ExerciseList}, \texttt{ExerciseInfo},
+		\texttt{PostureAI.js},
+		\texttt{WorkoutActive.js} (tab bar hidden),
+		\texttt{WorkoutSummary.js} (tab bar hidden),
+		\texttt{ManualWorkout} \\
+		Insights  & \texttt{Insights.js}
+		& Correlation cards, weekly charts \\
+		Profile   & \texttt{ProfileMain.js}
+		& \texttt{Settings}, \texttt{EditProfile},
+		\texttt{HelpCenter}, \texttt{ReportProblem},
+		\texttt{TermsPolicies}, \texttt{TrustCenter},
+		\texttt{WorkoutHistory}, \texttt{SleepLog.js} \\
 		\bottomrule
 	\end{tabularx}
 \end{table}
 
-\subsection{Key Screens}
+The following screens are pushed as modals on top of the tab navigator
+from any context: \texttt{Schedule}, \texttt{Community},
+\texttt{Messages}, \texttt{DMThread}, and \texttt{FlappyBirdGame}.
 
-\begin{figure}[H]
-	\centering
-	% --- ROW 1 ---
-	\begin{subfigure}[b]{0.31\textwidth}
-		\centering
-		\includegraphics[width=\textwidth]{images/launch-screen}
-		\caption{Launch Screen}
-		\label{fig:ui-launch}
-	\end{subfigure}
-	\hfill
-	\begin{subfigure}[b]{0.31\textwidth}
-		\centering
-		\includegraphics[width=\textwidth]{images/home-screen}
-		\caption{Home Dashboard}
-		\label{fig:ui-home}
-	\end{subfigure}
-	\hfill
-	\begin{subfigure}[b]{0.31\textwidth}
-		\centering
-		\includegraphics[width=\textwidth]{images/nutrition-screen}
-		\caption{Nutrition Log}
-		\label{fig:ui-fuel}
-	\end{subfigure}
-	
-	\vspace{1.5em} % Vertical space between the two rows
-	
-	% --- ROW 2 ---
-	\begin{subfigure}[b]{0.31\textwidth}
-		\centering
-		\includegraphics[width=\textwidth]{images/train-screen}
-		\caption{Training}
-		\label{fig:ui-train}
-	\end{subfigure}
-	\hfill
-	\begin{subfigure}[b]{0.31\textwidth}
-		\centering
-		\includegraphics[width=\textwidth]{images/insights-screen}
-		\caption{User Insights}
-		\label{fig:ui-insight}
-	\end{subfigure}
-	\hfill
-	\begin{subfigure}[b]{0.31\textwidth}
-		\centering
-		\includegraphics[width=\textwidth]{images/profile-screen}
-		\caption{User Profile}
-		\label{fig:ui-profile}
-	\end{subfigure}
-	
-	\caption{Key User Interface screens of the BodyQ mobile application organized by functional area.}
-	\label{fig:key-screens}
-\end{figure}
+Four global overlays are mounted on all authenticated screens:
+\texttt{YaraAssistant} (bottom-sheet, visible on Home, Fuel,
+TrainingHub, and Insights), \texttt{AppTour} (onboarding walkthrough),
+\texttt{CelebrationOverlay} (XP and achievement animations), and
+\texttt{MilestoneCelebrationOverlay} (milestone interstitials).
+
+\paragraph{Web application (Next.js~14).}
+The web application uses file-based routing with two protected prefixes.
+User routes (\texttt{/app/*}) are accessible to any authenticated role
+and cover \texttt{/app}, \texttt{/app/activity},
+\texttt{/app/nutrition}, \texttt{/app/insights}, and
+\texttt{/app/profile}. Admin routes (\texttt{/dashboard/*}) are
+restricted to \texttt{admin} and \texttt{super\_admin} roles and
+include overview, analytics, users, support, subscriptions, realtime,
+audit, AI, content (nutrition, workouts, prompts), notifications,
+segments, versions, and settings. Middleware enforces redirects:
+unauthenticated requests to protected routes go to \texttt{/login},
+authenticated admins hitting \texttt{/login} go to
+\texttt{/dashboard}, and non-admin roles hitting \texttt{/dashboard/*}
+go to \texttt{/403}.
 
 \section{Conclusion}
 

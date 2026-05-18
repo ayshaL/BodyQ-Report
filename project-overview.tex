@@ -54,34 +54,13 @@ BodyQ is a cross-platform mobile application targeting iOS and Android,
 built with React Native and the Expo SDK. It provides an integrated
 health and fitness coaching experience centered on four core capabilities:
 
-\textbf{AI-Powered Personalized Coaching via RAG:} At the heart of
-BodyQ is an AI coaching assistant named \textit{Yara}. Yara is powered
-by a Retrieval-Augmented Generation pipeline implemented as a Supabase
-Edge Function. When a user poses a question or requests guidance, the
-system retrieves the user's recent health data from the Supabase
-PostgreSQL database, injects this context into a structured prompt, and
-sends the augmented prompt to the Claude API or the Groq inference
-platform. The response is then persisted to the \texttt{ai\_insights}
-table and delivered to the user.
+\textbf{AI-Powered Personalized Coaching via RAG:} At the heart of BodyQ is an AI coaching assistant named \textit{Yara}. Yara is powered by a Retrieval-Augmented Generation pipeline implemented as a Supabase Edge Function. When a user poses a question or requests guidance, the system retrieves the user's recent health data from the Supabase PostgreSQL database, injects this context into a structured prompt, and sends the augmented prompt to the Groq inference
+platform. The response is then persisted to the \texttt{ai\_insights} table and delivered to the user.
 
 \textbf{Computer Vision Posture Detection.} BodyQ integrates
-MediaPipe's Pose solution to provide real-time biomechanical feedback
-during exercise execution. The system runs MediaPipe's JavaScript
-library inside an Expo WebView, accesses the device camera via
-\texttt{getUserMedia}, and transmits 33 three-dimensional pose landmarks
-to the React Native layer. A custom \texttt{PostureEngine} module
-processes these landmarks, calculates joint angles using vector
-mathematics, and evaluates form quality against exercise-specific
-biomechanical rules. The engine supports automatic rep counting and
-generates a posture score between 0 and 100.
+MediaPipe's Pose solution to provide real-time biomechanical feedback during exercise execution. The system runs MediaPipe's JavaScript library inside an Expo WebView, accesses the device camera via \texttt{getUserMedia}, and transmits 33 three-dimensional pose landmarks to the React Native layer. A custom \texttt{PostureEngine} module processes these landmarks, calculates joint angles using vector mathematics, and evaluates form quality against exercise-specific biomechanical rules. The engine supports automatic rep counting and generates a posture score between 0 and 100.
 
-\textbf{Intelligent Nutrition Tracking.} The nutrition module supports
-three food logging modalities: manual text search, barcode scanning via
-the Open Food Facts API, and AI-powered photo recognition using the
-Google Gemini Vision API or Claude's vision capabilities. The system
-calculates BMR using the Mifflin-St~Jeor equation and derives TDEE and
-macronutrient targets based on the user's activity level and fitness
-goal.
+\textbf{Intelligent Nutrition Tracking.} The nutrition module supports three food logging modalities: manual text search, barcode scanning via the Open Food Facts API, and AI-powered photo recognition using the Google Gemini Vision API capabilities. The system calculates BMR using the Mifflin-St~Jeor equation and derives TDEE and macronutrient targets based on the user's activity level and fitness goal.
 
 \textbf{Behavioral Correlation and Cycle-Aware Adaptation.} A weekly
 correlation engine computes Pearson correlation coefficients across

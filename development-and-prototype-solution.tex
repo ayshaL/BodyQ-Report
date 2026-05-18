@@ -46,44 +46,53 @@ The choice of technology was driven by the need to deliver a high-quality
 cross-platform application quickly, with a scalable backend and built-in AI
 capabilities. Table~\ref{tab:techstack} summarizes the full technology stack.
 
-\begin{table}[h!]
-\centering
-\renewcommand{\arraystretch}{1.4}
-\begin{tabular}{|p{3.5cm}|p{4cm}|p{6cm}|}
-\hline
-\textbf{Component} & \textbf{Technology} & \textbf{Justification} \\
-\hline
-Mobile Framework & React Native + Expo &
-    Single codebase for iOS and Android; Expo accelerates development with
-    managed workflow \\
-\hline
-Language & JavaScript + TypeScript &
-    TypeScript used for all service and model layers to enforce type safety \\
-\hline
-Backend \& Database & Supabase (PostgreSQL) &
-    Provides Auth, Database, Storage, and serverless Edge Functions in one
-    platform \\
-\hline
-AI Chat \& Planning & Groq API (LLaMA models) &
-    Ultra-fast inference; \texttt{llama-3.1-8b-instant} for chat,
-    \texttt{llama-3.3-70b-versatile} for plan generation \\
-\hline
-AI Plan Generation & Google Gemini 2.0 Flash &
-    Used in the onboarding plan flow; generous free tier (1M tokens/min) \\
-\hline
-Local State & React Context API &
-    Lightweight global state without Redux overhead \\
-\hline
-Local Persistence & AsyncStorage &
-    Offline schedule storage and completion tracking \\
-\hline
-Navigation & React Navigation &
-    Industry standard for React Native screen navigation \\
-\hline
-\end{tabular}
-\caption{Application Technology Stack}
-\label{tab:techstack}
-\end{table}
+\begin{xltabular}{\textwidth}{llX}
+	\caption{Application technology stack} \label{tab:techstack} \\
+	\toprule
+	\textbf{Component} & \textbf{Technology} & \textbf{Justification} \\
+	\midrule
+	\endfirsthead
+	
+	\multicolumn{3}{c}{{\bfseries \tablename\ \thetable{} -- Continued from previous page}} \\
+	\toprule
+	\textbf{Component} & \textbf{Technology} & \textbf{Justification} \\
+	\midrule
+	\endhead
+	
+	\midrule
+	\multicolumn{3}{r}{{Continued on next page\ldots}} \\
+	\endfoot
+	
+	\bottomrule
+	\endlastfoot
+	
+	Mobile Framework    & React Native + Expo
+	& Single codebase for iOS and Android; Expo accelerates development
+	with a managed workflow. \\ \addlinespace[3pt]
+	Language            & JavaScript + TypeScript
+	& TypeScript is used for all service and model layers to enforce
+	type safety. \\ \addlinespace[3pt]
+	Smartwatch          & Kotlin (Wear OS)
+	& Native Wear OS app built in Kotlin; communicates with the mobile
+	client over BLE and the Health Services API to sync steps, heart
+	rate, sleep, and calories. \\ \addlinespace[3pt]
+	Backend \& Database & Supabase (PostgreSQL)
+	& Provides Auth, Database, Storage, and serverless Edge Functions
+	in one platform. \\ \addlinespace[3pt]
+	AI Chat \& Planning & Groq API (LLaMA models)
+	& Ultra-fast inference; \texttt{llama-3.1-8b-instant} for chat,
+	\texttt{llama-3.3-70b-versatile} for plan generation. \\ \addlinespace[3pt]
+	AI Plan Generation  & Google Gemini 2.0 Flash
+	& Used in the onboarding plan flow; generous free tier
+	(1\,M tokens/min). \\ \addlinespace[3pt]
+	Local State         & React Context API
+	& Lightweight global state without Redux overhead. \\ \addlinespace[3pt]
+	Local Persistence   & AsyncStorage
+	& Offline schedule storage and completion tracking. \\ \addlinespace[3pt]
+	Navigation          & React Navigation
+	& Industry standard for React Native screen navigation. \\
+\end{xltabular}
+
 
 \subsection{Application Architecture}
 
@@ -115,59 +124,60 @@ it, making the codebase maintainable, testable, and easy to extend.
 The Supabase PostgreSQL database contains the key tables described in
 Table~\ref{tab:schema}.
 
-\begin{table}[h!]
-\centering
-\renewcommand{\arraystretch}{1.4}
-\begin{tabular}{|p{4.5cm}|p{9cm}|}
-\hline
-\textbf{Table} & \textbf{Purpose} \\
-\hline
-\texttt{profiles} &
-    User profile: goal, body metrics, experience, equipment, diet, login
-    streak \\
-\hline
-\texttt{calorie\_targets} &
-    Computed daily calorie and macro targets (TDEE, protein, carbs, fat) \\
-\hline
-\texttt{training\_plans} &
-    AI-generated weekly plan stored as JSON, one row per user (upsert) \\
-\hline
-\texttt{workout\_sessions} &
-    Each workout session: start/end time, calories burned, notes \\
-\hline
-\texttt{workout\_exercises} &
-    Individual exercises within a session: sets, reps, weight, posture score \\
-\hline
-\texttt{muscle\_fatigue} &
-    Per-muscle fatigue percentage (0–100\%), updated after each workout \\
-\hline
-\texttt{food\_logs} &
-    Each food logged: user reference, food reference, quantity in grams,
-    timestamp \\
-\hline
-\texttt{foods} &
-    Food database: calories, protein, carbs, fat per 100g \\
-\hline
-\texttt{daily\_activity} &
-    Steps, sleep hours, and water intake per day per user \\
-\hline
-\texttt{chat\_messages} &
-    Yara conversation history per user \\
-\hline
-\texttt{ai\_insights} &
-    Cached AI insight cards with a 6-hour time-to-live \\
-\hline
-\texttt{direct\_messages} &
-    Direct message conversations between users \\
-\hline
-\end{tabular}
-\caption{Supabase Database Schema}
-\label{tab:schema}
-\end{table}
+\begin{xltabular}{\textwidth}{p{4cm}X}
+	\caption{Supabase database schema} \label{tab:schema} \\
+	\toprule
+	\textbf{Table} & \textbf{Purpose} \\
+	\midrule
+	\endfirsthead
+	
+	\multicolumn{2}{c}{{\bfseries \tablename\ \thetable{} -- Continued from previous page}} \\
+	\toprule
+	\textbf{Table} & \textbf{Purpose} \\
+	\midrule
+	\endhead
+	
+	\midrule
+	\multicolumn{2}{r}{{Continued on next page\ldots}} \\
+	\endfoot
+	
+	\bottomrule
+	\endlastfoot
+	
+	\texttt{profiles}
+	& User profile: goal, body metrics, experience, equipment, diet,
+	login streak. \\ \addlinespace[3pt]
+	\texttt{calorie\_targets}
+	& Computed daily calorie and macro targets (TDEE, protein, carbs,
+	fat). \\ \addlinespace[3pt]
+	\texttt{training\_plans}
+	& AI-generated weekly plan stored as JSON, one row per user
+	(upsert). \\ \addlinespace[3pt]
+	\texttt{workout\_sessions}
+	& Each workout session: start/end time, calories burned,
+	notes. \\ \addlinespace[3pt]
+	\texttt{workout\_exercises}
+	& Individual exercises within a session: sets, reps, weight, posture
+	score. \\ \addlinespace[3pt]
+	\texttt{muscle\_fatigue}
+	& Per-muscle fatigue percentage (0--100\,\%), updated after each
+	workout. \\ \addlinespace[3pt]
+	\texttt{food\_logs}
+	& Each food logged: user reference, food reference, quantity in
+	grams, timestamp. \\ \addlinespace[3pt]
+	\texttt{foods}
+	& Food database: calories, protein, carbs, fat per 100\,g. \\ \addlinespace[3pt]
+	\texttt{daily\_activity}
+	& Steps, sleep hours, and water intake per day per user. \\ \addlinespace[3pt]
+	\texttt{chat\_messages}
+	& Yara conversation history per user. \\ \addlinespace[3pt]
+	\texttt{ai\_insights}
+	& Cached AI insight cards with a 6-hour time-to-live. \\ \addlinespace[3pt]
+	\texttt{direct\_messages}
+	& Direct message conversations between users. \\
+\end{xltabular}
 
-% ─────────────────────────────────────────────────────────────────────────────
 \section{Development Support}
-% ─────────────────────────────────────────────────────────────────────────────
 
 \subsection{Development Tools}
 
@@ -197,7 +207,7 @@ Development used a \textbf{feature branch workflow}:
 \begin{itemize}
     \item \texttt{main} branch: stable, deployable code at all times.
     \item Feature branches named by feature
-    (e.g., \texttt{mayssa-fix1}, \texttt{scheduleweek-fix-generate}).
+    (e.g., \texttt{feat/community}, \texttt{feat/notifications} \texttt{scheduleweek-fix-generate}).
     \item Branches are merged into \texttt{main} after review and testing.
 \end{itemize}
 
@@ -205,20 +215,38 @@ This approach prevented conflicts when multiple team members worked on
 different features simultaneously, and ensured the main branch always remained
 functional.
 
-\subsection{AI API Integration}
-
-Two external AI providers are integrated into the application:
-
 \subsubsection{Groq API}
-\begin{itemize}
-    \item Endpoint: \texttt{https://api.groq.com/openai/v1/chat/completions}
-    \item Model \texttt{llama-3.1-8b-instant} — used for Yara's conversational
-    chat, prioritizing low latency.
-    \item Model \texttt{llama-3.3-70b-versatile} — used for AI workout plan
-    generation, prioritizing output quality.
-    \item The Yara Insights feature routes through a Supabase Edge Function
-    so the API key is never exposed on the client side.
-\end{itemize}
+
+All AI inference is routed through the Groq API endpoint
+\texttt{https://api.groq.com/openai/v1/chat/completions} via Supabase
+Edge Functions, ensuring that API keys are never exposed on the client
+side. Table~\ref{tab:groq-models} lists the models used and their
+assigned roles.
+
+\begin{xltabular}{\textwidth}{llX}
+	\caption{Groq models used in BodyQ} \label{tab:groq-models} \\
+	\toprule
+	\textbf{Model} & \textbf{Type} & \textbf{Used For} \\
+	\midrule
+	\endfirsthead
+	
+	\multicolumn{3}{c}{{\bfseries \tablename\ \thetable{} -- Continued from previous page}} \\
+	\toprule
+	\textbf{Model} & \textbf{Type} & \textbf{Used For} \\
+	\midrule
+	\endhead
+	
+	\bottomrule
+	\endlastfoot
+	
+	\texttt{llama-3.3-70b-versatile} & Large (70B)
+	& RAG chatbot (Yara), training plan generation, and schedule
+	generation. \\ \addlinespace[3pt]
+	\texttt{llama-3.1-8b-instant}    & Small (8B)
+	& Insight cards and lightweight conversational queries. \\ \addlinespace[3pt]
+	\texttt{whisper-large-v3-turbo}  & Speech-to-Text
+	& Voice input transcription for the Yara assistant. \\
+\end{xltabular}
 
 \subsubsection{Google Gemini API}
 \begin{itemize}
@@ -228,15 +256,12 @@ Two external AI providers are integrated into the application:
     avoiding rate-limit issues during testing.
 \end{itemize}
 
-% ─────────────────────────────────────────────────────────────────────────────
 \section{Implementation}
-% ─────────────────────────────────────────────────────────────────────────────
 
 \subsection{System Interfaces and Screens}
 \label{sec:screens}
 
-This section describes each screen of the application, its purpose, and its
-key user interface elements.
+This section describes each screen of the application, its purpose, and its key user interface elements.
 
 \subsubsection{Authentication Screens}
 
@@ -247,130 +272,271 @@ sign-in button that authenticates the user via Supabase Auth. The
 name, email, and password. On success, a corresponding row is created in the
 \texttt{profiles} table and the user is redirected to the onboarding flow.
 
+\begin{figure}[H]
+	\centering
+	\begin{subfigure}[b]{0.31\textwidth}
+		\centering
+		\includegraphics[width=\textwidth]{images/sign-in.PNG}
+		\caption{Sign In}
+	\end{subfigure}
+	\hspace{1cm}
+	\begin{subfigure}[b]{0.31\textwidth}
+		\centering
+		\includegraphics[width=\textwidth]{images/sign-up.PNG}
+		\caption{Sign Up}
+	\end{subfigure}
+	\caption{Authentication screens.}
+	\label{fig:ui-auth}
+\end{figure}
+
 \subsubsection{Onboarding Flow}
 
 New users complete a multi-step onboarding process that collects all
-information needed to personalize the AI experience. The ten steps are:
+information needed to personalise the AI experience. The ten steps are:
 
 \begin{enumerate}
-    \item \textbf{Goal selection} — Lose Fat, Gain Muscle, Maintain, Gain
-    Weight, Build Habits, or Athletic Performance.
-    \item \textbf{Body measurements} — Height (cm), current weight (kg),
-    target weight, and date of birth.
-    \item \textbf{Experience level} — Beginner, Intermediate, or Advanced,
-    each with a description of the associated training approach.
-    \item \textbf{Equipment} — Full Gym, Dumbbells, Home (Bodyweight),
-    Resistance Bands, or Kettlebells.
-    \item \textbf{Schedule} — Number of workout days per week (1–7), session
-    duration (20–90 min), and preferred time of day.
-    \item \textbf{Focus areas} — Multi-select: Chest, Back, Legs, Arms,
-    Shoulders, Core, Cardio.
-    \item \textbf{Injuries and limitations} — Multi-select: None, Knee,
-    Back, Shoulder, Wrist, Ankle.
-    \item \textbf{Diet preference} — Anything, Vegetarian, Vegan, Keto,
-    Gluten-Free, or Lactose-Free.
-    \item \textbf{Lifestyle} — Sleep quality (1–5) and stress level (1–5).
-    \item \textbf{Completion screen} — Animated confirmation before entering
-    the main application.
+	\item \textbf{Goal selection} --- Lose Fat, Gain Muscle, Maintain, Gain
+	Weight, Build Habits, or Athletic Performance.
+	\item \textbf{Body measurements} --- Height (cm), current weight (kg),
+	target weight, and date of birth.
+	\item \textbf{Experience level} --- Beginner, Intermediate, or Advanced,
+	each with a description of the associated training approach.
+	\item \textbf{Equipment} --- Full Gym, Dumbbells, Home (Bodyweight),
+	Resistance Bands, or Kettlebells.
+	\item \textbf{Schedule} --- Number of workout days per week (1--7), session
+	duration (20--90 min), and preferred time of day.
+	\item \textbf{Focus areas} --- Multi-select: Chest, Back, Legs, Arms,
+	Shoulders, Core, Cardio.
+	\item \textbf{Injuries and limitations} --- Multi-select: None, Knee,
+	Back, Shoulder, Wrist, Ankle.
+	\item \textbf{Diet preference} --- Anything, Vegetarian, Vegan, Keto,
+	Gluten-Free, or Lactose-Free.
+	\item \textbf{Lifestyle} --- Sleep quality (1--5) and stress level (1--5).
+	\item \textbf{Completion screen} --- Animated confirmation before entering
+	the main application.
 \end{enumerate}
 
 On completion, all data is saved to the \texttt{profiles} table, calorie
 and macro targets are computed and saved to \texttt{calorie\_targets}, and
 an interactive app tour launches to guide the user through the main tabs.
 
+\begin{figure}[H]
+	\centering
+	\begin{subfigure}[b]{0.31\textwidth}
+		\centering
+		\includegraphics[width=\textwidth]{images/goal-selection.png}
+		\caption{Goal Selection}
+	\end{subfigure}
+	\hfill
+	\begin{subfigure}[b]{0.31\textwidth}
+		\centering
+		\includegraphics[width=\textwidth]{images/body-metrics.png}
+		\caption{Body Measurements}
+	\end{subfigure}
+	\hfill
+	\begin{subfigure}[b]{0.31\textwidth}
+		\centering
+		\includegraphics[width=\textwidth]{images/onboarding-complete.png}
+		\caption{Completion Screen}
+	\end{subfigure}
+	\caption{Onboarding flow.}
+	\label{fig:ui-onboarding}
+\end{figure}
+
+
 \subsubsection{Home Dashboard}
 
-The home screen is the central view the user sees every day. It contains:
+The home screen is the central view the user sees every day
+(Figure~\ref{fig:ui-home}). It contains:
 \begin{itemize}
-    \item \textbf{Calorie Ring} — A circular animated progress indicator
-    showing calories consumed versus the daily target.
-    \item \textbf{Macro bars} — Horizontal progress bars for protein,
-    carbohydrates, and fat.
-    \item \textbf{Water tracker} — Tap-to-add water glasses with a
-    hydration goal bar.
-    \item \textbf{Today's Schedule Widget} — A preview of the day's
-    exercises and meals from the AI plan, linking to the full Schedule screen.
-    \item \textbf{Step Counter} — Real-time step count with daily goal
-    progress from the device pedometer.
-    \item \textbf{Quick action buttons} — Log Food, Log Sleep, Start
-    Workout, Open Yara Chat.
+	\item \textbf{Calorie Ring} --- A circular animated progress indicator
+	showing calories consumed versus the daily target.
+	\item \textbf{Macro bars} --- Horizontal progress bars for protein,
+	carbohydrates, and fat.
+	\item \textbf{Water tracker} --- Tap-to-add water glasses with a
+	hydration goal bar.
+	\item \textbf{Today's Schedule Widget} --- A preview of the day's
+	exercises and meals from the AI plan, linking to the full Schedule
+	screen.
+	\item \textbf{Step Counter} --- Real-time step count with daily goal
+	progress from the device pedometer.
+	\item \textbf{Quick action buttons} --- Log Food, Log Sleep, Start
+	Workout, Open Yara Chat.
 \end{itemize}
 
-The Yara floating action button is visible on this screen and provides
-instant access to the AI coach from anywhere in the app.
+The Yara floating action button is visible on this screen and provides instant access to the AI coach from anywhere in the app.
+
+\begin{figure}[H]
+	\centering
+	\begin{subfigure}[b]{0.31\textwidth}
+		\centering
+		\includegraphics[width=\textwidth]{images/launch-screen}
+		\caption{Launch Screen}
+		\label{fig:ui-launch}
+	\end{subfigure}
+	\hspace{1cm}
+	\begin{subfigure}[b]{0.31\textwidth}
+		\centering
+		\includegraphics[width=\textwidth]{images/home-screen}
+		\caption{Home Dashboard}
+		\label{fig:ui-home}
+	\end{subfigure}	
+	\caption{Key user screens of the BodyQ mobile application.}
+	\label{fig:key-screens}
+\end{figure}
 
 \subsubsection{Training Screen}
 
-The training hub allows the user to:
+The training hub (Figure~\ref{fig:ui-train}) serves as the central hub
+for all workout-related activity. From this screen, the user can:
 \begin{itemize}
-    \item Generate a personalized AI workout plan by tapping the
-    \textbf{Generate Plan} button.
-    \item Regenerate with a different training split style (Push/Pull/Legs,
-    Upper/Lower, Full Body, Bro Split, Athletic, or Hypertrophy).
-    \item Browse the exercise library with category filters.
-    \item Access the PostureAI camera for real-time form analysis.
-    \item View workout history.
+	\item Generate a personalised AI workout plan tailored to their
+	profile, goals, and available equipment.
+	\item Regenerate the plan with a preferred training split:
+	Push/Pull/Legs, Upper/Lower, Full Body, Bro Split, Athletic,
+	or Hypertrophy.
+	\item Browse the exercise library filtered by muscle group or
+	equipment category.
+	\item Launch the \textbf{PostureAI} camera for real-time form
+	analysis during exercises.
 \end{itemize}
+
+Additional workout screens support the full session lifecycle:
+\begin{itemize}
+	\item \textbf{WorkoutActive} --- guides the user through each
+	exercise with a live rep counter and automated rest timer.
+	\item \textbf{WorkoutSummary} --- displays post-session statistics
+	including total reps, calories burned, duration, and average
+	posture score.
+	\item \textbf{PostureAI} --- overlays real-time skeletal landmarks
+	on the camera feed and flags form errors as they occur.
+	\item \textbf{FlappyBird Game} --- a mini-game available during rest
+	periods to maintain user engagement between sets.
+\end{itemize}
+
+\begin{figure}[H]
+	\centering
+	\begin{subfigure}[b]{0.31\textwidth}
+		\centering
+		\includegraphics[width=\textwidth]{images/train-screen.png}
+		\caption{Train Screen}
+	\end{subfigure}
+	\hfill
+	\begin{subfigure}[b]{0.31\textwidth}
+		\centering
+		\includegraphics[width=\textwidth]{images/3d-exercise.png}
+		\caption{3D demonstration}
+	\end{subfigure}
+	\hfill
+	\begin{subfigure}[b]{0.31\textwidth}
+		\centering
+		\includegraphics[width=\textwidth]{images/ai-posture.png}
+		\caption{AI Posture Correction}
+	\end{subfigure}
+	\caption{Training Screens.}
+	\label{fig:ui-train}
+\end{figure}
 
 \subsubsection{Schedule Screen}
 
 This screen displays the AI-generated weekly plan interactively:
 \begin{itemize}
-    \item A \textbf{horizontal day-selector} with colored pills for each
-    day, indicating workout type, completion status, and missed days.
-    \item A \textbf{progress card} showing workout completion percentage,
-    step count versus goal, and planned meal calories.
-    \item An \textbf{exercise checklist} with animated rows; exercises
-    carried over from a missed previous day are tagged ``carried over''.
-    \item \textbf{Meal cards} showing each planned meal with per-food
-    calorie breakdown.
-    \item A \textbf{Mark Day Complete} button that activates only when
-    every exercise is checked off.
+	\item A \textbf{horizontal day-selector} with coloured pills for each
+	day, indicating workout type, completion status, and missed days.
+	\item A \textbf{progress card} showing workout completion percentage,
+	step count versus goal, and planned meal calories.
+	\item An \textbf{exercise checklist} with animated rows; exercises
+	carried over from a missed previous day are tagged ``carried over''.
+	\item \textbf{Meal cards} showing each planned meal with per-food
+	calorie breakdown.
+	\item A \textbf{Mark Day Complete} button that activates only when
+	every exercise is checked off.
 \end{itemize}
 
-\subsubsection{Workout Screens}
-
-The \textbf{WorkoutActive} screen provides the live workout interface with
-rep counting and a rest timer. The \textbf{WorkoutSummary} screen displays
-post-workout statistics including total reps, calories burned, duration, and
-average posture score. The \textbf{PostureAI} screen uses the device camera
-with a real-time pose estimation model to provide visual feedback on exercise
-form. The \textbf{FlappyBird Game} is a mini-game that activates during rest
-periods to keep users engaged.
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.31\textwidth]{images/weekly-plan.png}
+	\caption{Schedule screen showing the AI-generated weekly plan with
+		day selector, exercise checklist, and meal cards.}
+	\label{fig:ui-schedule}
+\end{figure}
 
 \subsubsection{Workout History Screen}
 
 A timeline of all past sessions, grouped by month. Each session card shows
-exercise names, date, total reps, duration, calories burned, and a color-coded
-FORM score (green $\geq$80\%, orange $\geq$55\%, red below). Tapping a card
-opens a detail sheet with a full exercise breakdown showing sets, reps, weight,
-duration, and posture score per exercise.
+exercise names, date, total reps, duration, calories burned, and a
+colour-coded FORM score (green $\geq$80\,\%, orange $\geq$55\,\%, red
+below). Tapping a card opens a detail sheet with a full exercise breakdown
+showing sets, reps, weight, duration, and posture score per exercise.
 
 \subsubsection{Nutrition Screens}
 
-The \textbf{Nutrition} overview shows the day's calorie ring and food log
-entries. The \textbf{Meal Logger} provides three methods to log food:
-text search of the local food database, barcode scanning via the device
-camera, and AI photo analysis. The \textbf{Custom Meal Builder} allows users
-to create named meal presets from multiple ingredients and log them in a
-single tap.
+The \textbf{Nutrition} overview (Figure~\ref{fig:ui-nutrition-detail}) shows the day's
+calorie ring and food log entries. The \textbf{Meal Logger} provides three
+methods to log food: text search of the local food database, barcode
+scanning via the device camera, and AI photo analysis. The \textbf{Custom
+	Meal Builder} allows users to create named meal presets from multiple
+ingredients and log them in a single tap.
+
+\begin{figure}[H]
+	\centering
+	\begin{subfigure}[b]{0.31\textwidth}
+		\centering
+		\includegraphics[width=\textwidth]{images/nutrition-screen.png}
+		\caption{Nutrition Screen}
+	\end{subfigure}
+	\hfill
+	\begin{subfigure}[b]{0.31\textwidth}
+		\centering
+		\includegraphics[width=\textwidth]{images/pic-scan.png}
+		\caption{AI photo food scanning}
+	\end{subfigure}
+	\hfill
+	\begin{subfigure}[b]{0.31\textwidth}
+		\centering
+		\includegraphics[width=\textwidth]{images/barcode-scan.png}
+		\caption{Barcode Scanning}
+	\end{subfigure}
+	\caption{Nutrition main Screens.}
+	\label{fig:ui-nutrition-detail}
+\end{figure}
 
 \subsubsection{Insights Screen}
 
-The analytics dashboard contains:
+The analytics dashboard (Figure~\ref{fig:ui-insight}) contains:
 \begin{itemize}
-    \item A \textbf{period selector} (Week / Month / 3 Months).
-    \item \textbf{Four summary cards}: Streak (days), Workouts (count),
-    Average Steps, and Average Sleep.
-    \item A \textbf{Health Score Chart} showing daily scores (0–100) over
-    the selected period.
-    \item A \textbf{42-day activity heatmap} showing intensity per day.
-    \item \textbf{Nutrition and Workout summaries} with averaged metrics.
-    \item A \textbf{Muscle Fatigue chart} showing recovery state per muscle
-    group.
-    \item \textbf{Four AI Insight Cards} generated by Yara from the user's
-    real behavioral data (cached for 6 hours).
+	\item A \textbf{period selector} (Week / Month / 3 Months).
+	\item \textbf{Four summary cards}: Streak (days), Workouts (count),
+	Average Steps, and Average Sleep.
+	\item A \textbf{Health Score Chart} showing daily scores (0--100) over
+	the selected period.
+	\item A \textbf{42-day activity heatmap} showing intensity per day.
+	\item \textbf{Nutrition and Workout summaries} with averaged metrics.
+	\item A \textbf{Muscle Fatigue chart} showing recovery state per muscle
+	group.
+	\item \textbf{Four AI Insight Cards} generated by Yara from the user's
+	real behavioural data (cached for 6 hours).
 \end{itemize}
+
+\begin{figure}[H]
+	\centering
+	\begin{subfigure}[b]{0.26\textwidth}
+		\centering
+		\includegraphics[width=\textwidth]{images/insights-screen.png}
+		\caption{Insights Screen}
+		\label{fig:ui-insight}
+	\end{subfigure}
+	\hspace{1cm}
+	\begin{subfigure}[b]{0.4\textwidth}
+		\centering
+		\includegraphics[width=\textwidth]{images/gen-report}
+		\caption{AI Generated Report}
+		\label{fig:ui-report}
+	\end{subfigure}
+	\caption{Insights and AI-generated weekly performance report screens.}
+	\label{fig:insights}
+\end{figure}
+
 
 \subsubsection{Community Screens}
 
@@ -379,14 +545,150 @@ achievements. The \textbf{Messages Inbox} lists all direct message
 conversations. The \textbf{DM Thread} provides real-time 1-to-1 messaging
 with push notification support for new messages received in the background.
 
+\begin{figure}[H]
+	\centering
+	\begin{subfigure}[b]{0.31\textwidth}
+		\centering
+		\includegraphics[width=\textwidth]{images/comm-centre}
+		\caption{Community Center}
+	\end{subfigure}
+	\hfill
+	\begin{subfigure}[b]{0.31\textwidth}
+		\centering
+		\includegraphics[width=\textwidth]{images/inbox}
+		\caption{Messages Inbox}
+	\end{subfigure}
+	\hfill
+	\begin{subfigure}[b]{0.31\textwidth}
+		\centering
+		\includegraphics[width=\textwidth]{images/dm-thread}
+		\caption{DM Threads}
+	\end{subfigure}
+	\caption{Community screens.}
+	\label{fig:ui-community}
+\end{figure}
+
 \subsubsection{Profile and Settings}
 
-The \textbf{Profile} screen displays the user's avatar, name, bio, location,
-and activity summary. The \textbf{Edit Profile} screen allows updating the
-display name (required), bio (160 characters maximum), date of birth
-(native date picker), city, country (searchable list of 70+ countries), and
-password. Settings sub-screens include Help Center, Report a Problem, Terms
-and Policies, and Trust Center.
+The \textbf{Profile} screen (Figure~\ref{fig:ui-profile-detail}) displays the
+user's avatar, name, bio, location, and activity summary. The \textbf{Edit
+	Profile} screen allows updating the display name (required), bio (160
+characters maximum), date of birth (native date picker), city, country
+(searchable list of 70+ countries), and password. Settings sub-screens
+include Help Center, Report a Problem, Terms and Policies, and Trust Center.
+
+\begin{figure}[H]
+	\centering
+	\begin{subfigure}[b]{0.31\textwidth}
+		\centering
+		\includegraphics[width=\textwidth]{images/profile-screen}
+		\caption{Profile Screen}
+		\label{fig:ui-profile}
+	\end{subfigure}
+	\hspace{1cm}
+	\begin{subfigure}[b]{0.31\textwidth}
+		\centering
+		\includegraphics[width=\textwidth]{images/settings}
+		\caption{Settings Screen}
+		\label{fig:ui-settings}
+	\end{subfigure}	
+	\caption{Profile screen and Settings(edit profile, help center).}
+	\label{fig:ui-profile-detail}
+\end{figure}
+
+
+\subsubsection{Web Application Screens}
+
+The BodyQ web application serves as both a public marketing surface and
+a protected user portal. Figures~\ref{fig:web-screens-1}
+and~\ref{fig:web-screens-2} illustrate the key public-facing pages.
+
+\begin{figure}[H]
+	\centering
+	\begin{subfigure}[b]{0.48\textwidth}
+		\centering
+		\includegraphics[width=\textwidth]{images/web-home.png}
+		\caption{Landing Hero}
+		\label{fig:web-hero}
+	\end{subfigure}
+	\hfill
+	\begin{subfigure}[b]{0.48\textwidth}
+		\centering
+		\includegraphics[width=\textwidth]{images/web-inf.png}
+		\caption{Features Grid}
+		\label{fig:web-features}
+	\end{subfigure}
+	\caption{BodyQ web application: landing page}
+	\label{fig:web-screens-1}
+\end{figure}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.6\textwidth]{images/web-posture}
+	\caption{BodyQ web application}
+	\label{fig:web-screens-2}
+\end{figure}
+
+The landing page presents BodyQ's three core value propositions: 
+AI-powered posture coaching, personalised nutrition, and dynamic workout
+planning. The features grid communicates six key capabilities —
+AI Posture Analysis, Smart Nutrition AI, Dynamic Workout Plans,
+Real-Time Coaching, Progress Intelligence, and Community Challenges —
+each with a concise description. The PostureAI section highlights the
+computer vision engine with a live skeleton overlay mockup showing a
+94\,\% form score.
+
+
+\subsubsection{Smartwatch Application Screens}
+
+The BodyQ smartwatch companion app runs as a Wear OS application and
+provides a glanceable view of the user's daily metrics synced from the
+mobile client. Figure~\ref{fig:watch-screens} presents all five screens
+of the watch application.
+
+\begin{figure}[H]
+	\centering
+	\begin{subfigure}[b]{0.25\textwidth}
+		\centering
+		\includegraphics[width=\textwidth]{images/home-watch.png}
+		\caption{Splash}
+		\label{fig:watch-splash}
+	\end{subfigure}
+	\hfill
+	\begin{subfigure}[b]{0.25\textwidth}
+		\centering
+		\includegraphics[width=\textwidth]{images/metrics-watch.png}
+		\caption{Today}
+		\label{fig:watch-today}
+	\end{subfigure}
+	\hfill
+	\begin{subfigure}[b]{0.25\textwidth}
+		\centering
+		\includegraphics[width=\textwidth]{images/watch-metrics.png}
+		\caption{Menu}
+		\label{fig:watch-menu}
+	\end{subfigure}
+	\hfill
+	\begin{subfigure}[b]{0.25\textwidth}
+		\centering
+		\includegraphics[width=\textwidth]{images/workt-watch.png}
+		\caption{Workouts}
+		\label{fig:watch-workouts}
+	\end{subfigure}
+	\caption{BodyQ smartwatch companion app screens.}
+	\label{fig:watch-screens}
+\end{figure}
+
+The \textbf{Splash} screen displays the BodyQ mascot and version number
+on launch. The \textbf{Today} dashboard presents a real-time glanceable
+summary of steps (goal: 10{,}000), water intake (goal: 2{,}500\,ml),
+sleep duration, and calories burned — all synced from the mobile client
+via BLE. The \textbf{Menu} screen provides navigation to three
+sections: Workouts, Nutrition, and Insights. The \textbf{Workouts}
+screen lists recent sessions started from the phone, and the
+\textbf{Nutrition} screen displays macro targets (protein, carbs, fat)
+and remaining daily calories, with meal logging redirected to the
+mobile app.
 
 % ─────────────────────────────────────────────────────────────────────────────
 
